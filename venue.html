@@ -1,0 +1,179 @@
+<!-- Include Alpine.js -->
+<script src="https://unpkg.com/alpinejs" defer></script>
+
+<div x-data="venuesApp()" x-init="init()">
+  <h2>Gestione Venues</h2>
+    <button @click="newVenue(null)">Aggiungi venue</button>
+    <input
+        type="text"
+        placeholder="Cerca..."
+        x-model="search"
+        @input="filterVenues"
+        style="margin-bottom: 1em; width: 100%; padding: 6px;"
+    />
+
+    <table>
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th @click="sortBy('Id')">ID</th>
+                <th @click="sortBy('Code')">Codice</th>
+                <th @click="sortBy('VenueName')">Nome</th>
+                <th @click="sortBy('Type')">Tipo</th>
+                <th @click="sortBy('Capacity')">Capacità</th>
+                <th @click="sortBy('DateStart')">Data Inizio</th>
+                <th @click="sortBy('DateEnd')">Data Fine</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template x-for="venue in filteredVenues" :key="venue.Id">
+                    <tr>
+                        <td>
+                            <button @click="editVenue(venue)">✏️</button>
+                        </td>
+                        <td x-text="venue.Id"></td>
+                        <td x-text="venue.Code"></td>
+                        <td x-text="venue.VenueName"></td>
+                        <td x-text="venue.Type"></td>
+                        <td x-text="venue.Capacity"></td>
+                        <td x-text="formatDate(venue.DateStart)"></td>
+                        <td x-text="formatDate(venue.DateEnd)"></td>
+                        <td>
+                            <button @click="deleteVenue(venue.Id)">🗑️</button>
+                        </td>
+                    </tr>
+            </template>
+        </tbody>
+    </table>
+
+
+    <div class="overlayhidden" id="overlayContainer">
+        <div class="modelContent" id="venueEditContainer">
+            <form @submit.prevent="saveVenue" style="margin-bottom:1em;">
+                <input type="hidden" x-model="form.Id" />
+
+                <div>
+                    <label>Codice</label>
+                    <input type="text" x-model="form.Code" required />
+                </div>
+                    
+                <div>
+                    <label>Nome</label>
+                    <input type="text" x-model="form.VenueName" required />
+                </div>
+
+                <div>
+                    <label>Tipo</label>
+                    <select x-model="form.Type" required>
+                        <option value="">— Seleziona —</option>
+                        <template x-for="opt in typeOptions" :key="opt">
+                            <option :value="opt" x-text="opt"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Indirizzo</label>
+                    <input type="text" x-model="form.Address" />
+                </div>
+
+                <div>
+                    <label>Capacità</label>
+                    <input type="number" x-model="form.Capacity" />
+                </div>
+
+                <div>
+                    <label>Struttura accessibile dal:</label>
+                    <input type="date" x-model="form.DateStart" />
+                </div>
+
+                <div>
+                    <label>Fino al:</label>
+                    <input type="date" x-model="form.DateEnd" />
+                </div>
+
+                <div>
+                    <label>Orario avvio lavori</label>
+                    <input type="text" x-model="form.DailyWorkStartTime" />
+                </div>
+
+                <div>
+                    <label>Orario fine lavori</label>
+                    <input type="text" x-model="form.DailyWorkEndTime" />
+                </div>
+
+                <div>
+                    <label>Contatto per la Consegna</label>
+                    <input type="text" x-model="form.ShipmentContactDelivery" />
+                </div>
+
+                <div>
+                    <label>Contatto per il Ritiro</label>
+                    <input type="text" x-model="form.ShipmentContactPickUp" />
+                </div>   
+                <div>
+                    <label>&nbsp;</label>
+                    <span>&nbsp;</span>
+                </div>         
+
+                <div>
+                    <label>Latitudine</label>
+                    <input type="number" x-model="form.Latitude" step="0.000001" min="-90" max="90" inputmode="decimal" />
+                </div>    
+
+                <div>
+                    <label>Longitudine</label>
+                    <input type="number" x-model="form.Longitude" step="0.000001" min="-180" max="180" inputmode="decimal" />
+                </div>   
+                
+                <div>
+                    <label>Note</label>
+                    <textarea x-model="form.Notes"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" x-text="form.Id ? 'Aggiorna Venue' : 'Aggiungi Venue'"></button>
+                </div>
+                <div>
+
+                    <!-- Pulsante Importa -->
+                    <button type="button"
+                        onclick="window.location.href='https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/venuesImport.aspx'"
+                        title="Importa da Excel"
+                        style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"></path>
+                        </svg>
+                        Importa
+                    </button>
+                </div>
+                <div>
+                    <button @click="closeOverlay"
+                        type="button"
+                        title="Chiudi"
+                        style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">               
+                        Chiudi
+                    </button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="divLoading" class="loading-box">
+        <span class="close-btn" onclick="hideLoading()">&times;</span>
+        <p>Salvataggio in corso...</p>
+        <svg class="spinner" viewBox="0 0 50 50">
+            <circle
+                cx="25" cy="25" r="20"
+                fill="none" stroke-width="5">
+            </circle>
+        </svg>
+    </div>
+
+    <div id="divNotification" class="notification">
+        <span id="notifMsg"></span>
+        <span class="close-btn" @click="hideNotification">&times;</span>
+    </div>
+
+</div>
