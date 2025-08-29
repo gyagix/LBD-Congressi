@@ -3,44 +3,100 @@
 
 <div x-data="venuesApp()" x-init="init()">
   <h2>Gestione Venues</h2>
-    <button @click="newVenue(null)">Aggiungi venue</button>
-    <input
-        type="text"
-        placeholder="Cerca..."
-        x-model="search"
-        @input="filterVenues"
-        style="margin-bottom: 1em; width: 100%; padding: 6px;"
-    />
+        <div class="filter-list">
 
-    <table>
+            <button class="button-icon button-add" @click="newVenue(null)">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-label="Nuovo" role="img"
+                    fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </button>
+            <button class="button-icon button-add" @click="openEditTableListShowHide()">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 20 20"
+                    fill="none" stroke="#000000" stroke-width="1"
+                    stroke-linecap="round" stroke-linejoin="round">
+                <!-- tabella -->
+                <rect x="3" y="4" width="14" height="16" rx="2" ry="2"></rect>
+                <line x1="3" y1="10" x2="17" y2="10"></line>
+                <line x1="3" y1="16" x2="17" y2="16"></line>
+                <line x1="9" y1="4" x2="9" y2="20"></line>
+                <!-- occhio sbarrato -->
+                <path d="M21 12c-1.8 3-5 5-9 5s-7.2-2-9-5c1.8-3 5-5 9-5s7.2 2 9 5z"/>
+                <line x1="3" y1="3" x2="21" y2="21"/>
+                </svg>
+            </button>
+            <input
+                class="input-search"
+                type="text"
+                placeholder="Cerca..."
+                x-model="search"
+                @input="filterVenues"
+                style="margin-bottom: 1em; width: 100%; padding: 6px;"
+            />
+        </div>
+
+    <table id="tableList" class="table-list">
         <thead>
             <tr>
                 <th>&nbsp;</th>
-                <th @click="sortBy('Id')">ID</th>
-                <th @click="sortBy('Code')">Codice</th>
-                <th @click="sortBy('VenueName')">Nome</th>
-                <th @click="sortBy('Type')">Tipo</th>
-                <th @click="sortBy('Capacity')">Capacità</th>
-                <th @click="sortBy('DateStart')">Data Inizio</th>
-                <th @click="sortBy('DateEnd')">Data Fine</th>
-                <th>Azioni</th>
+                <th data-name="Id" @click="sortBy('Id')">ID</th>
+                <th data-name="Code" @click="sortBy('Code')">Codice</th>
+                <th data-name="VenueName" @click="sortBy('VenueName')">Nome</th>
+                <th data-name="Type" @click="sortBy('Type')">Tipo</th>
+                <th data-name="Capacity" @click="sortBy('Capacity')">Capacità</th>
+                <th data-name="Address" @click="sortBy('Address')">Indirizzo</th>
+                <th data-name="DateStart" @click="sortBy('DateStart')">Data Inizio</th>
+                <th data-name="DateEnd" @click="sortBy('DateEnd')">Data Fine</th>
+                <th data-name="DailyWorkStartTime" @click="sortBy('DailyWorkStartTime')">Ora Inizio</th>
+                <th data-name="DailyWorkEndTime" @click="sortBy('DailyWorkEndTime')">Ora Fine</th>
+                <th data-name="ShipmentContactDelivery" @click="sortBy('ShipmentContactDelivery')">Contatto consegna</th>
+                <th data-name="ShipmentContactPickUp" @click="sortBy('ShipmentContactPickUp')">Contatto ritiro</th>
+                <th data-name="Notes" @click="sortBy('Notes')">Note</th>
+                <th data-name="Latitude" @click="sortBy('Latitude')">Latitudine</th>
+                <th data-name="Longitude" @click="sortBy('Longitude')">Longitudine</th>                
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
             <template x-for="venue in filteredVenues" :key="venue.Id">
                     <tr>
                         <td>
-                            <button @click="editVenue(venue)">✏️</button>
+                            <button @click="editVenue(venue)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        viewBox="0 0 20 20" fill="none" stroke="#000000"
+                                        stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                </svg>
+                            </button>
                         </td>
-                        <td x-text="venue.Id"></td>
-                        <td x-text="venue.Code"></td>
-                        <td x-text="venue.VenueName"></td>
-                        <td x-text="venue.Type"></td>
-                        <td x-text="venue.Capacity"></td>
-                        <td x-text="formatDate(venue.DateStart)"></td>
-                        <td x-text="formatDate(venue.DateEnd)"></td>
+                        <td data-name="Id" x-text="venue.Id"></td>
+                        <td data-name="Code" x-text="venue.Code"></td>
+                        <td data-name="VenueName" x-text="venue.VenueName"></td>
+                        <td data-name="Type" x-text="venue.Type"></td>
+                        <td data-name="Capacity" x-text="venue.Capacity"></td>
+                        <td data-name="DateStart" x-text="formatDate(venue.DateStart)"></td>
+                        <td data-name="DateEnd" x-text="formatDate(venue.DateEnd)"></td>
+                        <td data-name="DailyWorkStartTime" x-text="venue.DailyWorkStartTime"></td>
+                        <td data-name="DailyWorkEndTime" x-text="venue.DailyWorkEndTime"></td>
+                        <td data-name="Address" x-text="venue.Address"></td>
+                        <td data-name="ShipmentContactDelivery" x-text="venue.ShipmentContactDelivery"></td>
+                        <td data-name="ShipmentContactPickUp" x-text="venue.ShipmentContactPickUp"></td>
+                        <td data-name="Notes" x-text="venue.Notes"></td>
+                        <td data-name="Latitude" x-text="venue.Latitude"></td>
+                        <td data-name="Longitude" x-text="venue.Longitude"></td>
                         <td>
-                            <button @click="deleteVenue(venue.Id)">🗑️</button>
+                            <button @click="deleteVenue(venue.Id)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                    viewBox="0 0 20 20" fill="none" stroke="#000000"
+                                    stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                </svg>
+                            </button>
                         </td>
                     </tr>
             </template>
@@ -48,8 +104,9 @@
     </table>
 
 
-    <div class="overlayhidden" id="overlayContainer">
-        <div class="modelContent" id="venueEditContainer">
+    <div class="overlay overlayhidden" id="overlayContainer">
+
+        <div class="modelContent modelContentHidden" id="venueEditContainer">
             <form @submit.prevent="saveVenue" style="margin-bottom:1em;">
                 <input type="hidden" x-model="form.Id" />
 
@@ -59,7 +116,7 @@
                 </div>
                     
                 <div>
-                    <label>Nome</label>
+                    <label>Descrizione</label>
                     <input type="text" x-model="form.VenueName" required />
                 </div>
 
@@ -95,12 +152,12 @@
 
                 <div>
                     <label>Orario avvio lavori</label>
-                    <input type="text" x-model="form.DailyWorkStartTime" />
+                    <input type="time" x-model="form.DailyWorkStartTime" pattern="^([01]\d|2[0-3]):([0-5]\d)$" placeholder="HH:MM" />
                 </div>
 
                 <div>
                     <label>Orario fine lavori</label>
-                    <input type="text" x-model="form.DailyWorkEndTime" />
+                    <input type="time" x-model="form.DailyWorkEndTime" pattern="^([01]\d|2[0-3]):([0-5]\d)$" placeholder="HH:MM" />
                 </div>
 
                 <div>
@@ -111,11 +168,7 @@
                 <div>
                     <label>Contatto per il Ritiro</label>
                     <input type="text" x-model="form.ShipmentContactPickUp" />
-                </div>   
-                <div>
-                    <label>&nbsp;</label>
-                    <span>&nbsp;</span>
-                </div>         
+                </div>      
 
                 <div>
                     <label>Latitudine</label>
@@ -125,13 +178,11 @@
                 <div>
                     <label>Longitudine</label>
                     <input type="number" x-model="form.Longitude" step="0.000001" min="-180" max="180" inputmode="decimal" />
-                </div>   
-                
+                </div>  
                 <div>
                     <label>Note</label>
                     <textarea x-model="form.Notes"></textarea>
                 </div>
-
                 <div>
                     <button type="submit" x-text="form.Id ? 'Aggiorna Venue' : 'Aggiungi Venue'"></button>
                 </div>
@@ -149,7 +200,7 @@
                     </button>
                 </div>
                 <div>
-                    <button @click="closeOverlay"
+                    <button @click="closeModalEdit"
                         type="button"
                         title="Chiudi"
                         style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">               
@@ -158,17 +209,17 @@
             </div>
             </form>
         </div>
-    </div>
 
-    <div id="divLoading" class="loading-box">
-        <span class="close-btn" onclick="hideLoading()">&times;</span>
-        <p>Salvataggio in corso...</p>
-        <svg class="spinner" viewBox="0 0 50 50">
-            <circle
-                cx="25" cy="25" r="20"
-                fill="none" stroke-width="5">
-            </circle>
-        </svg>
+        <div id="divLoading" class="loading-box loading-hide">
+            <span class="close-btn" @click="hideLoading">&times;</span>
+            <p class="loading-text">Salvataggio in corso...</p>
+            <svg class="spinner" viewBox="0 0 50 50">
+                <circle
+                    cx="25" cy="25" r="20"
+                    fill="none" stroke-width="5">
+                </circle>
+            </svg>
+        </div>
     </div>
 
     <div id="divNotification" class="notification">

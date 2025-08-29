@@ -33,6 +33,7 @@
             notifyMsg:null,
             notifTimeout:null,
             loading:null,
+            tableList:null,
             search: '',
             sortKey: 'Id',
             sortAsc: true,
@@ -56,6 +57,23 @@
                 Latitude: 0,
                 Longitude: 0
             },
+            fields:[
+                { name: 'Id', type: 'number', label: 'ID', showInTableList:1 },
+                { name: 'Code', type: 'text', label: 'Codice', showInTableList:1  },
+                { name: 'VenueName', type: 'text', label: 'Nome', showInTableList:1  },
+                { name: 'Type', type: 'text', label: 'Tipo', showInTableList:1  },
+                { name: 'Capacity', type: 'number', label: 'Capacita', showInTableList:1  },
+                { name: 'DateStart', type: 'date', label: 'Data Inizio', showInTableList:1  },
+                { name: 'DateEnd', type: 'date', label: 'Data Fine', showInTableList:1  },
+                { name: 'DailyWorkStartTime', type: 'time', label: 'Ora Inizio', showInTableList:0 },
+                { name: 'DailyWorkEndTime', type: 'time', label: 'Ora Fine', showInTableList:0 },
+                { name: 'Address', type: 'text', label: 'Indirizzo', showInTableList:0 },
+                { name: 'ShipmentContactDelivery', type: 'text', label: 'Contatto consegna', showInTableList:0 },
+                { name: 'ShipmentContactPickUp', type: 'text', label: 'Contatto ritiro', showInTableList:0 },
+                { name: 'Notes', type: 'text', label: 'Note', showInTableList:0 },
+                { name: 'Latitude', type: 'number', label: 'Latitudine', showInTableList:0 },
+                { name: 'Longitude', type: 'number', label: 'Longitudine', showInTableList:0 }
+            ],
 
             async init() {
                 window.assetVersion = window.assetVersion || String(Date.now()); // se non già definita
@@ -66,6 +84,9 @@
                 this.notifyMsg = document.getElementById("notifMsg");
                 this.loading = document.getElementById("divLoading");
 
+                this.tableList = document.getElementById("tableList");
+                
+
                 const { VenueLogic } = await import(`${BASE_FRAMEWORK_PATH}/bll/VenueLogic.js?v=${window.assetVersion}`);
                 this.venueLogic = new VenueLogic();
                 this.typeOptions = (VenueLogic.allowedTypes || []).slice();
@@ -73,15 +94,20 @@
             },
 
             async loadVenues() {
+                this.showLoading("Caricamento dati in corso...")
                 try {
                     // ✅ passa un filtro oggetto, non []
                     const data = await this.venueLogic.query({}, 500);
-                    this.venues = data || [];
+                    this.venues = data || [];                    
+                    this.showHideTableListFields()
                     this.filterVenues();
+                    this.closeOverlay();
                 } catch (e) {
                     logger.error('Errore caricamento venues:', e);
                     this.showNotification('Errore caricamento venues, controlla console.','error');
                 }
+
+                this.closeOverlay();
             },
 
 
@@ -143,7 +169,6 @@
                     this.typeOptions = [...this.typeOptions, this.form.Type];
                 }                        
 
-                this.openOverlay()
                 this.openContentEditor();
             },
 
@@ -168,6 +193,7 @@
             },
 
             async saveVenue() {
+                this.showLoading();
                 try {
                     // clone “pulito” per evitare Proxy Alpine
                     const payload = JSON.parse(JSON.stringify(this.form));
@@ -212,13 +238,12 @@
                         await this.venueLogic.create(payload);   // POST
                     }
 
-                    await this.loadVenues();
                     this.resetForm();
-                    this.closeContentEditor()
-                    this.closeOverlay();
+                    this.closeContentEditor();
+                    await this.loadVenues();
                     this.showNotification('Salvato con successo.','success');
                 } catch (e) {
-
+                    this.closeOverlay();
                     const msg = (e?.message || '').toLowerCase();
                     if ((msg.includes('esiste gi') && msg.includes('un elemento')) || msg.includes('unicit')) {
                         logger.log('[DEBUG] app.js->saveVenue: Errore salvataggio venue: Nome già presente', e);
@@ -236,22 +261,48 @@
                 // se la tua delete vuole l'oggetto:
                 // await this.venueLogic.delete({ Id: id });
                 await this.venueLogic.delete(id);
+                this.closeContentEditor();
                 await this.loadVenues();
-                this.closeContentEditor()
-                this.closeOverlay();
                 } catch (e) {
                     logger.error('Errore cancellazione venue:', e);
                     this.showNotification('Errore nella cancellazione, controlla console.','error');
                 }
             },
 
+
+            showHideTableListFields(){
+                this.fields.forEach(field => {   
+                    const tdFields = this.tableList.querySelectorAll(`td[data-name="${field.name}"]`);
+                    tdFields.forEach(td => {
+                        if(field.showInTableList == 1){
+                            td.classList.remove("table-list-column-hide")
+                        }else{
+                            td.classList.add("table-list-column-hide")
+                        }
+                    })
+                    
+                    const thField = this.tableList.querySelector(`th[data-name="${field.name}"]`);
+                    if(field.showInTableList == 1){
+                        thField.classList.remove("table-list-column-hide")
+                    }else{
+                        thField.classList.add("table-list-column-hide")
+                    }
+
+                    
+                })
+            },
+            openEditTableListShowHide(){
+                alert("W.i.P.")
+            },
+            saveTableListShowHide(){
+
+            },
             formatDate(dateStr) {
                 if (!dateStr) return '';
                 const d = new Date(dateStr);
                 if (isNaN(d)) return dateStr;
                 return d.toLocaleDateString('it-IT');
             },
-
             showNotification(message, type){
                 this.notifyMsg.textContent = message;
                 this.notif.className = `notification ${type} show`;
@@ -262,7 +313,7 @@
                     clearTimeout(this.notifTimeout);
                     this.notifTimeout = setTimeout(() => {
                                             this.hideNotification();
-                                        }, 3000);
+                                        }, 4000);
                     break;
                     case "error":
                         // errore → resta finché non chiudi con la X
@@ -271,28 +322,38 @@
                 }
             },
             hideNotification(){ 
-                this.notif.classList.remove("notificationShow");
+                this.notif.classList.remove("show");
             },
             openOverlay(){
                 this.overlayContainer.classList.remove('overlayhidden');
-                this.overlayContainer.classList.add('overlay');
+                //this.overlayContainer.classList.add('overlay');
+            },
+            closeModalEdit(){
+                this.closeOverlay();
             },
             closeOverlay(){
                 this.overlayContainer.classList.add('overlayhidden');
-                this.overlayContainer.classList.remove('overlay');
+                this.hideLoading();
+                this.closeContentEditor()
+                //this.overlayContainer.classList.remove('overlay');
             },
-            openContentEditor(){
-                
-                this.editContainer.classList.remove('mopdelContentHidden');
+            openContentEditor(){      
+                this.openOverlay();          
+                this.editContainer.classList.remove('modelContentHidden');
             },
             closeContentEditor(){                
-                this.editContainer.classList.add('mopdelContentHidden');
+                this.editContainer.classList.add('modelContentHidden');
             },
-            showLoading(){
-                this.loading.classList.add("loadingShow");
+            showLoading(myText = "Salvataggio in corso"){
+                this.openOverlay();
+                // prende il primo <p> dentro a divLoading
+                let p = this.loading.querySelector("p");
+                p.textContent = myText;
+                
+                this.loading.classList.remove("loading-hide");
             },
             hideLoading(){
-                this.loading.classList.remove("loadingShow");
+                this.loading.classList.add("loading-hide");
             }
         };
     };
