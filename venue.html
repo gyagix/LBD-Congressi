@@ -13,17 +13,12 @@
             </button>
             <button class="button-icon button-add" @click="openEditTableListShowHide()">
                 <svg xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 20 20"
+                    width="20" height="20" viewBox="0 0 24 24"
                     fill="none" stroke="#000000" stroke-width="1"
-                    stroke-linecap="round" stroke-linejoin="round">
-                <!-- tabella -->
-                <rect x="3" y="4" width="14" height="16" rx="2" ry="2"></rect>
-                <line x1="3" y1="10" x2="17" y2="10"></line>
-                <line x1="3" y1="16" x2="17" y2="16"></line>
-                <line x1="9" y1="4" x2="9" y2="20"></line>
+                    stroke-linecap="round" stroke-linejoin="round">               
                 <!-- occhio sbarrato -->
                 <path d="M21 12c-1.8 3-5 5-9 5s-7.2-2-9-5c1.8-3 5-5 9-5s7.2 2 9 5z"/>
-                <line x1="3" y1="3" x2="21" y2="21"/>
+                <line x1="3" y1="3" x2="20" y2="20"/>
                 </svg>
             </button>
             <input
@@ -184,11 +179,23 @@
                     <textarea x-model="form.Notes"></textarea>
                 </div>
                 <div>
-                    <button type="submit" x-text="form.Id ? 'Aggiorna Venue' : 'Aggiungi Venue'"></button>
+                    <button class="modalContentButton" type="submit">
+                        <span x-text="form.Id ? 'Aggiorna Venue' : 'Aggiungi Venue'"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            fill="none" stroke="#000" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+
+                    </button>
                 </div>
                 <div>
 
                     <!-- Pulsante Importa -->
+                    <!--
                     <button type="button"
                         onclick="window.location.href='https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/venuesImport.aspx'"
                         title="Importa da Excel"
@@ -198,13 +205,22 @@
                         </svg>
                         Importa
                     </button>
+                    -->
                 </div>
                 <div>
                     <button @click="closeModalEdit"
                         type="button"
                         title="Chiudi"
-                        style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">               
-                        Chiudi
+                        class="modalContentButton">
+                        Chiudi senza salvare
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            fill="none" stroke="#000" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
                     </button>
             </div>
             </form>
@@ -220,6 +236,31 @@
                 </circle>
             </svg>
         </div>
+
+        <div id="editVisibilityTableCols" class="modalShowHideTableCols modalShowHideTableColsHidden" >
+            <h3>Mostra/Nascondi colonne</h3>
+
+            <!-- Checkbox Seleziona/Togli tutti -->
+            <label class="checkbox-item">
+                <input type="checkbox" x-model="tableListCkAllChecked" @change="editTableListToggleAll()">
+                <span>Seleziona/Togli tutti</span>
+            </label>
+
+            <div class="checkbox-list-columns">
+                <template x-for="(field, index) in fields" :key="field.name">
+                    <label class="checkbox-item">
+                        <input type="checkbox" x-model="field.showInTableList">
+                        <span x-text="field.label"></span>
+                    </label>
+                </template>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn" @click="saveTableListShowHide()">Conferma e chiudi</button>
+            </div>
+        </div>
+
+
     </div>
 
     <div id="divNotification" class="notification">

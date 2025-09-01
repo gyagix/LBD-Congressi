@@ -1,0 +1,108 @@
+<!-- Include Alpine.js -->
+<script src="https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/LBDSharepoint%20Code/Framework/vendors/alpine.min.js" defer></script>
+
+<div x-data="eventsApp()" x-init="init()">
+  <h2>Gestione Eventi</h2>
+
+  <form @submit.prevent="saveEvent" style="margin-bottom:1em;">
+    <input type="hidden" x-model="form.Id" />
+
+    <div>
+      <label>Numero Evento</label>
+      <input type="number" x-model="form.EventNumber" required />
+    </div>
+
+    <div>
+      <label>Nome Evento</label>
+      <input type="text" x-model="form.EventName" required />
+    </div>
+
+    <div>
+      <label>Tipo</label>
+      <select x-model="form.Type" required>
+        <option value="">— Seleziona —</option>
+        <template x-for="opt in typeOptions" :key="opt">
+          <option :value="opt" x-text="opt"></option>
+        </template>
+      </select>
+    </div>
+
+    <div>
+      <label>Lingua</label>
+      <input type="text" x-model="form.Language" />
+    </div>
+
+    <div>
+      <label>Data Inizio</label>
+      <input type="date" x-model="form.DateStart" />
+    </div>
+
+    <div>
+      <label>Data Fine</label>
+      <input type="date" x-model="form.DateEnd" />
+    </div>
+
+    <div>
+      <label>Venue</label>
+      <select x-model="form.Venue.Id" @change="updateCodeVenue">
+        <option value="">— Seleziona —</option>
+        <template x-for="venue in venueOptions" :key="venue.Id">
+          <option :value="venue.Id" x-text="venue.VenueName + ' (' + venue.Code + ')'"></option>
+        </template>
+      </select>
+    </div>
+
+    <div>
+      <label>Codice Venue</label>
+      <input type="text" x-model="form.CodeVenue" readonly />
+    </div>
+
+    <div>
+      <label>Email Evento</label>
+      <input type="text" x-model="form.Email" readonly />
+    </div>
+
+    <button type="submit" x-text="form.Id ? 'Aggiorna Evento' : 'Aggiungi Evento'"></button>
+    <button type="button" @click="resetForm">Reset</button>
+  </form>
+
+  <input
+    type="text"
+    placeholder="Cerca..."
+    x-model="search"
+    @input="filterEvents"
+    style="margin-bottom: 1em; width: 100%; padding: 6px;"
+  />
+
+  <table>
+    <thead>
+      <tr>
+        <th @click="sortBy('Id')">ID</th>
+        <th @click="sortBy('EventNumber')">Numero</th>
+        <th @click="sortBy('EventName')">Nome</th>
+        <th @click="sortBy('Type')">Tipo</th>
+        <th @click="sortBy('DateStart')">Inizio</th>
+        <th @click="sortBy('DateEnd')">Fine</th>
+        <th @click="sortBy('Venue_Code')">Codice Venue</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+      <template x-for="event in filteredEvents" :key="event.Id">
+        <tr>
+          <td x-text="event.Id"></td>
+          <td x-text="event.EventNumber"></td>
+          <td x-text="event.EventName"></td>
+          <td x-text="event.Type"></td>
+          <td x-text="formatDate(event.DateStart)"></td>
+          <td x-text="formatDate(event.DateEnd)"></td>
+          <td x-text="event.Venue.Code"></td>
+          <td>
+            <button @click="editEvent(event)">✏️</button>
+            <button @click="deleteEvent(event.Id)">🗑️</button>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</div>

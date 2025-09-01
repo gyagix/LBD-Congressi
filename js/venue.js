@@ -29,6 +29,7 @@
         return {
             overlayContainer:null,
             editContainer:null, //container di modifica
+            editTablesCols:null, //container delle colonne da mostrare/nascondere
             notif:null, //div per le notifiche
             notifyMsg:null,
             notifTimeout:null,
@@ -58,23 +59,32 @@
                 Longitude: 0
             },
             fields:[
-                { name: 'Id', type: 'number', label: 'ID', showInTableList:1 },
-                { name: 'Code', type: 'text', label: 'Codice', showInTableList:1  },
-                { name: 'VenueName', type: 'text', label: 'Nome', showInTableList:1  },
-                { name: 'Type', type: 'text', label: 'Tipo', showInTableList:1  },
-                { name: 'Capacity', type: 'number', label: 'Capacita', showInTableList:1  },
-                { name: 'DateStart', type: 'date', label: 'Data Inizio', showInTableList:1  },
-                { name: 'DateEnd', type: 'date', label: 'Data Fine', showInTableList:1  },
-                { name: 'DailyWorkStartTime', type: 'time', label: 'Ora Inizio', showInTableList:0 },
-                { name: 'DailyWorkEndTime', type: 'time', label: 'Ora Fine', showInTableList:0 },
-                { name: 'Address', type: 'text', label: 'Indirizzo', showInTableList:0 },
-                { name: 'ShipmentContactDelivery', type: 'text', label: 'Contatto consegna', showInTableList:0 },
-                { name: 'ShipmentContactPickUp', type: 'text', label: 'Contatto ritiro', showInTableList:0 },
-                { name: 'Notes', type: 'text', label: 'Note', showInTableList:0 },
-                { name: 'Latitude', type: 'number', label: 'Latitudine', showInTableList:0 },
-                { name: 'Longitude', type: 'number', label: 'Longitudine', showInTableList:0 }
+                { name: 'Id', type: 'number', label: 'ID', showInTableList:true },
+                { name: 'Code', type: 'text', label: 'Codice', showInTableList:true  },
+                { name: 'VenueName', type: 'text', label: 'Nome', showInTableList:true  },
+                { name: 'Type', type: 'text', label: 'Tipo', showInTableList:true  },
+                { name: 'Capacity', type: 'number', label: 'Capacita', showInTableList:true  },
+                { name: 'Address', type: 'text', label: 'Indirizzo', showInTableList:false },
+                { name: 'DateStart', type: 'date', label: 'Data Inizio', showInTableList:true  },
+                { name: 'DateEnd', type: 'date', label: 'Data Fine', showInTableList:true  },
+                { name: 'DailyWorkStartTime', type: 'time', label: 'Ora Inizio', showInTableList:false },
+                { name: 'DailyWorkEndTime', type: 'time', label: 'Ora Fine', showInTableList:false },
+                { name: 'ShipmentContactDelivery', type: 'text', label: 'Contatto consegna', showInTableList:false },
+                { name: 'ShipmentContactPickUp', type: 'text', label: 'Contatto ritiro', showInTableList:false },
+                { name: 'Notes', type: 'text', label: 'Note', showInTableList:false },
+                { name: 'Latitude', type: 'number', label: 'Latitudine', showInTableList:false },
+                { name: 'Longitude', type: 'number', label: 'Longitudine', showInTableList:false }
             ],
-
+            get tableListCkAllChecked() {
+                return this.fields.every(f => f.showInTableList);
+            },
+            set tableListCkAllChecked(value) {
+                this.fields.forEach(f => f.showInTableList = value);
+            },            
+            editTableListToggleAll() {
+                let newVal = !this.tableListCkAllChecked;
+                this.fields.forEach(f => f.showInTableList = newVal);
+            },
             async init() {
                 window.assetVersion = window.assetVersion || String(Date.now()); // se non già definita
 
@@ -85,11 +95,12 @@
                 this.loading = document.getElementById("divLoading");
 
                 this.tableList = document.getElementById("tableList");
-                
+                this.editTablesCols = document.getElementById("editVisibilityTableCols");
 
                 const { VenueLogic } = await import(`${BASE_FRAMEWORK_PATH}/bll/VenueLogic.js?v=${window.assetVersion}`);
                 this.venueLogic = new VenueLogic();
                 this.typeOptions = (VenueLogic.allowedTypes || []).slice();
+                this.showHideTableListFields();
                 await this.loadVenues();
             },
 
@@ -292,10 +303,19 @@
                 })
             },
             openEditTableListShowHide(){
-                alert("W.i.P.")
+                this.openOverlay();
+                if(this.editTablesCols == null){
+                    this.editTablesCols = document.getElementById("editVisibilityTableCols")
+                }
+                logger.log('openEditTableListShowHide',this.editTablesCols)
+                this.editTablesCols.classList.remove("modalShowHideTableColsHidden")
             },
             saveTableListShowHide(){
-
+                this.showLoading("Aggiornamento colonne in corso")
+                this.editTablesCols.classList.add("modalShowHideTableColsHidden")
+                this.showHideTableListFields();
+                this.hideLoading();
+                this.closeOverlay();
             },
             formatDate(dateStr) {
                 if (!dateStr) return '';
