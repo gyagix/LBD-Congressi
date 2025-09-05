@@ -1,0 +1,269 @@
+
+<div x-data="venuesApp()" x-init="init()">
+  <h2>Gestione Venues</h2>
+        <div class="filter-list">
+
+            <button class="button-icon button-add" @click="newVenue(null)">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-label="Nuovo" role="img"
+                    fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </button>
+            <button class="button-icon button-add" @click="openEditTableListShowHide()">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="#000000" stroke-width="1"
+                    stroke-linecap="round" stroke-linejoin="round">               
+                <!-- occhio sbarrato -->
+                <path d="M21 12c-1.8 3-5 5-9 5s-7.2-2-9-5c1.8-3 5-5 9-5s7.2 2 9 5z"/>
+                <line x1="3" y1="3" x2="20" y2="20"/>
+                </svg>
+            </button>
+            <input
+                class="input-search"
+                type="text"
+                placeholder="Cerca..."
+                x-model="search"
+                @input="filterVenues"
+                style="margin-bottom: 1em; width: 100%; padding: 6px;"
+            />
+        </div>
+
+    <table id="tableList" class="table-list">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th data-name="Id" @click="sortBy('Id')">ID</th>
+                <th data-name="Code" @click="sortBy('Code')">Codice</th>
+                <th data-name="VenueName" @click="sortBy('VenueName')">Nome</th>
+                <th data-name="Type" @click="sortBy('Type')">Tipo</th>
+                <th data-name="Capacity" @click="sortBy('Capacity')">Capacità</th>
+                <th data-name="Address" @click="sortBy('Address')">Indirizzo</th>
+                <th data-name="DateStart" @click="sortBy('DateStart')">Data Inizio</th>
+                <th data-name="DateEnd" @click="sortBy('DateEnd')">Data Fine</th>
+                <th data-name="DailyWorkStartTime" @click="sortBy('DailyWorkStartTime')">Ora Inizio</th>
+                <th data-name="DailyWorkEndTime" @click="sortBy('DailyWorkEndTime')">Ora Fine</th>
+                <th data-name="ShipmentContactDelivery" @click="sortBy('ShipmentContactDelivery')">Contatto consegna</th>
+                <th data-name="ShipmentContactPickUp" @click="sortBy('ShipmentContactPickUp')">Contatto ritiro</th>
+                <th data-name="Notes" @click="sortBy('Notes')">Note</th>
+                <th data-name="Latitude" @click="sortBy('Latitude')">Latitudine</th>
+                <th data-name="Longitude" @click="sortBy('Longitude')">Longitudine</th>                
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template x-for="venue in filteredVenues" :key="venue.Id">
+                    <tr>
+                        <td>
+                            <button @click="editVenue(venue)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        viewBox="0 0 20 20" fill="none" stroke="#000000"
+                                        stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                </svg>
+                            </button>
+                        </td>
+                        <td data-name="Id" x-text="venue.Id"></td>
+                        <td data-name="Code" x-text="venue.Code"></td>
+                        <td data-name="VenueName" x-text="venue.VenueName"></td>
+                        <td data-name="Type" x-text="venue.Type"></td>
+                        <td data-name="Capacity" x-text="venue.Capacity"></td>
+                        <td data-name="DateStart" x-text="formatDate(venue.DateStart)"></td>
+                        <td data-name="DateEnd" x-text="formatDate(venue.DateEnd)"></td>
+                        <td data-name="DailyWorkStartTime" x-text="venue.DailyWorkStartTime"></td>
+                        <td data-name="DailyWorkEndTime" x-text="venue.DailyWorkEndTime"></td>
+                        <td data-name="Address" x-text="venue.Address"></td>
+                        <td data-name="ShipmentContactDelivery" x-text="venue.ShipmentContactDelivery"></td>
+                        <td data-name="ShipmentContactPickUp" x-text="venue.ShipmentContactPickUp"></td>
+                        <td data-name="Notes" x-text="venue.Notes"></td>
+                        <td data-name="Latitude" x-text="venue.Latitude"></td>
+                        <td data-name="Longitude" x-text="venue.Longitude"></td>
+                        <td>
+                            <button @click="deleteVenue(venue.Id)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                    viewBox="0 0 20 20" fill="none" stroke="#000000"
+                                    stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+            </template>
+        </tbody>
+    </table>
+
+
+    <div class="overlay overlayhidden" id="overlayContainer">
+
+        <div class="modelContent modelContentHidden" id="venueEditContainer">
+            <form @submit.prevent="saveVenue" style="margin-bottom:1em;">
+                <input type="hidden" x-model="form.Id" />
+
+                <div>
+                    <label>Codice</label>
+                    <input type="text" x-model="form.Code" required />
+                </div>
+                    
+                <div>
+                    <label>Descrizione</label>
+                    <input type="text" x-model="form.VenueName" required />
+                </div>
+
+                <div>
+                    <label>Tipo</label>
+                    <select x-model="form.Type" required>
+                        <option value="">— Seleziona —</option>
+                        <template x-for="opt in typeOptions" :key="opt">
+                            <option :value="opt" x-text="opt"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Indirizzo</label>
+                    <input type="text" x-model="form.Address" />
+                </div>
+
+                <div>
+                    <label>Capacità</label>
+                    <input type="number" x-model="form.Capacity" />
+                </div>
+
+                <div>
+                    <label>Struttura accessibile dal:</label>
+                    <input type="date" x-model="form.DateStart" />
+                </div>
+
+                <div>
+                    <label>Fino al:</label>
+                    <input type="date" x-model="form.DateEnd" />
+                </div>
+
+                <div>
+                    <label>Orario avvio lavori</label>
+                    <input type="time" x-model="form.DailyWorkStartTime" pattern="^([01]\d|2[0-3]):([0-5]\d)$" placeholder="HH:MM" />
+                </div>
+
+                <div>
+                    <label>Orario fine lavori</label>
+                    <input type="time" x-model="form.DailyWorkEndTime" pattern="^([01]\d|2[0-3]):([0-5]\d)$" placeholder="HH:MM" />
+                </div>
+
+                <div>
+                    <label>Contatto per la Consegna</label>
+                    <input type="text" x-model="form.ShipmentContactDelivery" />
+                </div>
+
+                <div>
+                    <label>Contatto per il Ritiro</label>
+                    <input type="text" x-model="form.ShipmentContactPickUp" />
+                </div>      
+
+                <div>
+                    <label>Latitudine</label>
+                    <input type="number" x-model="form.Latitude" step="0.000001" min="-90" max="90" inputmode="decimal" />
+                </div>    
+
+                <div>
+                    <label>Longitudine</label>
+                    <input type="number" x-model="form.Longitude" step="0.000001" min="-180" max="180" inputmode="decimal" />
+                </div>  
+                <div>
+                    <label>Note</label>
+                    <textarea x-model="form.Notes"></textarea>
+                </div>
+                <div>
+                    <button class="modalContentButton" type="submit">
+                        <span x-text="form.Id ? 'Aggiorna Venue' : 'Aggiungi Venue'"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            fill="none" stroke="#000" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+
+                    </button>
+                </div>
+                <div>
+
+                    <!-- Pulsante Importa -->
+                    <!--
+                    <button type="button"
+                        onclick="window.location.href='https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/venuesImport.aspx'"
+                        title="Importa da Excel"
+                        style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"></path>
+                        </svg>
+                        Importa
+                    </button>
+                    -->
+                </div>
+                <div>
+                    <button @click="closeModalEdit"
+                        type="button"
+                        title="Chiudi"
+                        class="modalContentButton">
+                        Chiudi
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            fill="none" stroke="#000" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                    </button>
+            </div>
+            </form>
+        </div>
+
+        <div id="divLoading" class="loading-box loading-hide">
+            <span class="close-btn" @click="hideLoading">&times;</span>
+            <p class="loading-text">Salvataggio in corso...</p>
+            <svg class="spinner" viewBox="0 0 50 50">
+                <circle
+                    cx="25" cy="25" r="20"
+                    fill="none" stroke-width="5">
+                </circle>
+            </svg>
+        </div>
+
+        <div id="editVisibilityTableCols" class="modalShowHideTableCols modalShowHideTableColsHidden" >
+            <h3>Mostra/Nascondi colonne</h3>
+
+            <!-- Checkbox Seleziona/Togli tutti -->
+            <label class="checkbox-item">
+                <input type="checkbox" x-model="tableListCkAllChecked" @change="editTableListToggleAll()">
+                <span>Seleziona/Togli tutti</span>
+            </label>
+
+            <div class="checkbox-list-columns">
+                <template x-for="(field, index) in fields" :key="field.name">
+                    <label class="checkbox-item">
+                        <input type="checkbox" x-model="field.showInTableList">
+                        <span x-text="field.label"></span>
+                    </label>
+                </template>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn" @click="saveTableListShowHide()">Conferma e chiudi</button>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="divNotification" class="notification">
+        <span id="notifMsg"></span>
+        <span class="close-btn" @click="hideNotification">&times;</span>
+    </div>
+
+</div>

@@ -108,7 +108,7 @@
 					this.venueOptions = data || [];
 				} catch (e) {
 					logger.error('Errore caricamento venues:', e);
-					this.showNotification('Errore caricamento venues, controlla logger.');
+					this.showNotification('Errore caricamento venues, controlla logger.','error');
 				}
 				finally{
 					this.closeOverlay();
@@ -116,6 +116,7 @@
 			},
 
 			async loadEvents() {
+			    console.log("debug");
 				this.showLoading("Caricamento dati in corso...")
 				try {
 					const data = await this.eventLogic.query({}, 500); // già injectato nel BLL
@@ -227,12 +228,12 @@
 
 					// Assicurati che Venue sia solo l'id
 					if (payload.Venue && typeof payload.Venue === 'object' && payload.Venue.Id) {
-					payload.Venue = payload.Venue;
+						payload.Venue = payload.Venue;
 					} else if (payload.VenueId) {
-					payload.Venue = payload.VenueId;
+						payload.Venue = payload.VenueId;
 					}
 
-					if (payload.Id != null && payload.Id !== '' &&payload.Venue != null && payload.Venue !== '') {
+					if (payload.Id != null && payload.Id !== '' && payload.Venue != null && payload.Venue !== '') {
 						await this.eventLogic.update(payload);
 					} else {
 						await this.eventLogic.create(payload);
