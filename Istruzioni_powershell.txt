@@ -1,0 +1,8 @@
+Avvia il watcher automatico durante il lavoro:
+
+powershell -ExecutionPolicy Bypass -File RepoToOneDrive.ps1 -RepoPath "X:\JWBD\LBD-Congressi" -OneDrivePath "D:\OneDrive\Watchtower\Local Broadcasting (Bethel facility support) - LBD-Sharepoint Code"
+
+
+Aggiorna manualmente la repo dalle modifiche su OneDrive solo quando vuoi:
+
+powershell -ExecutionPolicy Bypass -File OneDriveToRepo.ps1 -RepoPath "X:\JWBD\LBD-Congressi" -OneDrivePath "D:\OneDrive\Watchtower\Local Broadcasting (Bethel facility support) - LBD-Sharepoint Code"

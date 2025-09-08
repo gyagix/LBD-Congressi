@@ -1,10 +1,6 @@
-<!-- Include Alpine.js -->
-<script src="https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/LBDSharepoint%20Code/Framework/vendors/alpine.min.js" defer></script>
 
 <div x-data="eventsApp()" x-init="init()">
   	<h2>Gestione Eventi</h2>
-
-
   	<div class="filter-list">
 		<button class="button-icon button-add" @click="newEvent(null)">
 			<svg width="24" height="24" viewBox="0 0 24 24" aria-label="Nuovo" role="img"
@@ -195,7 +191,7 @@
 
             <!-- Checkbox Seleziona/Togli tutti -->
             <label class="checkbox-item">
-                <input type="checkbox" x-model="tableListCkAllChecked" @change="editTableListToggleAll()">
+                <input type="checkbox" x-model="tableListCkAllChecked" />
                 <span>Seleziona/Togli tutti</span>
             </label>
 

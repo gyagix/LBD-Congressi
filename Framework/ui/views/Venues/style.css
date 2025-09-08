@@ -1,54 +1,54 @@
 form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 10px;
-  margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
 }
-
+        
 form label {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 2px;
+    display: block;
+    font-size: 12px;
+    margin-bottom: 2px;
 }
 
 form input,
 form textarea,
 form button,
 form select {
-  padding: 5px;
-  font-size: 14px;
-  width: 100%;
-  box-sizing: border-box;
+    padding: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 form textarea {
-  min-height: 40px;
+    min-height: 40px;
 }
 
 form button {
-  grid-column: span 2;
-  cursor: pointer;
+    grid-column: span 2;
+    cursor: pointer;
 }
 
 table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 14px;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
 }
 
 th,
 td {
-  border: 1px solid #ddd;
-  padding: 6px 10px;
+    border: 1px solid #ddd;
+    padding: 6px 10px;
 }
 
 th {
-  background-color: #f4f4f4;
-  cursor: pointer;
+    background-color: #f4f4f4;
+    cursor: pointer;
 }
 
 tr:nth-child(even) {
-  background-color: #fafafa;
+    background-color: #fafafa;
 }
 
 input[type='text'],
@@ -57,74 +57,9 @@ input[type='date'],
 input[type='time'],
 textarea,
 select {
-  border: 1px solid #ccc;
-  border-radius: 3px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
-
-  /* Layout a due colonne: form a sinistra, lista a destra */
-  .crud-layout {
-    display: grid;
-    grid-template-columns: minmax(280px, 360px) 1fr;
-    gap: 16px;
-    align-items: start;
-  }
-
-  /* Il form resta sempre visibile; se la pagina scorre, resta appiccicato in alto */
-  .form-panel {
-    position: sticky;
-    top: 8px;               /* regola se vuoi più margine dal top */
-    background: #fff;       /* per coprire eventuali contenuti sotto durante lo scroll */
-    z-index: 2;
-  }
-
-  /* La colonna lista può restringersi correttamente */
-  .list-panel { min-width: 0; }
-
-  /* Barra strumenti lista (ricerca) */
-  .list-toolbar {
-    margin-bottom: 8px;
-  }
-  .list-toolbar input[type="text"] {
-    width: 100%;
-    padding: 6px;
-  }
-
-  /* Contenitore scrollabile per la tabella */
-  .list-scroll {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: auto;
-    /* Altezza massima della griglia: regola a piacere */
-    max-height: 55vh;
-    background: #fff;
-  }
-
-  /* Header tabella sempre visibile durante lo scroll */
-  table thead th {
-    position: sticky;
-    top: 0;
-    background: #f4f4f4;
-    z-index: 1;
-  }
-
-  /* Responsive: sotto 1024px impila form sopra e lista sotto */
-  @media (max-width: 1024px) {
-    .crud-layout {
-      grid-template-columns: 1fr;
-    }
-    .form-panel {
-      position: static;     /* evitiamo sticky su schermi piccoli */
-    }
-    .list-scroll {
-      max-height: 40vh;     /* un po’ più bassa su mobile */
-    }
-  }
-
-
-
-
-  
-
 /*Filtri elenco*/
 
 	.filter-list{
@@ -145,17 +80,50 @@ select {
 	}
 
 /*Tabella elenco*/
-	.table-list{
-		opacity: 1;
-		display: block;
-		transition: opacity 0.7s ease;
-	}
+	.list-scroll{
+        height: 60svh;                 /* altezza dinamica */
+        overflow-y: auto;
+        overflow-x: auto;              /* abilita scroll orizzontale se necessario */
+        -webkit-overflow-scrolling: touch;    
+            opacity: 1;
+            display: block;
+            transition: opacity 0.7s ease;
+    }
+    /*Tabella elenco*/
+    .table-list{
+        width: 100%;
+        table-layout: fixed;           /* colonne fisse */
+    }
+    .table-list th,
+    .table-list td {
+        padding: 6px 10px;
+        border: 1px solid #ddd;      
+        text-align: left;
+    }
+    
+    /* Header della tabella fisso dentro .list-scroll */
+    .table-list thead th{
+        position: sticky;
+        top: 0;
+        background: #f4f4f4;
+        z-index: 1;
+        border-bottom: 2px solid #ccc;
+    }
+    
 	.table-list tbody tr:hover{
         background-color: #cccccc;
 	}
-	.table-list th:first-child,.table-list th:last-child{
-		width:30px;
-	}
+
+	.table-list th:first-child,
+    .table-list td:first-child,
+    .table-list th:last-child,
+    .table-list td:last-child {
+        width: 60px;
+    }
+    .table-list th:nth-child(2),
+    .table-list td:nth-child(2) {
+        width: 50px;
+        }
 
 	.table-list-hide{
 		opacity:0;
@@ -210,12 +178,12 @@ select {
         opacity: 0;
         transform: scale(0.95);
         pointer-events: none;
-        display: none;
+        display:none;
     }
 
 	.modelContent form{
 		display: grid;
-		grid-template-columns: 1fr 1fr; /* due colonne */
+		grid-template-columns: 1fr 1fr 1fr; /* tre colonne */
 		gap: 1em;
 	}
 	.modelContent form > div {
@@ -226,20 +194,6 @@ select {
 	/* Il campo Note prende entrambe le colonne */
 	.modelContent form > div:has(textarea) {
 		grid-column: 1 / -1;
-	}
-	.modelContent form .modalContainerContentButtons{
-		grid-column: 1 / -1;          /* forza a occupare tutta la larghezza della grid */
-		display: flex;		
-    	flex-direction: row;
-		gap: 1em;                     /* spazio tra i bottoni */
-		margin-top: 1em;
-
-	}
-	/* Su schermi piccoli i bottoni vanno uno sotto l'altro */
-	@media (max-width: 500px) {
-		.modelContent form .modalContainerContentButtons {
-			/*grid-template-columns: 1fr;     /* una sola colonna */
-		}
 	}
 
     .modalContentButton{
@@ -339,6 +293,10 @@ select {
 
     .notification.success {
         background-color: #28a745; /* verde */
+    }
+    
+    .notification.warning {
+        background-color: #edc100; /* verde */
     }
 
     .notification.error {

@@ -7,9 +7,6 @@
 
     const sharePointFolder = isDevArea ? "/sites/ita-lbd-bethelfacilitysupport" : "/sites/ita-lbd";           
     
-
-    
-
     // DEV: busting aggressivo ad ogni refresh (in produzione userai una stringa fissa tipo "1.3.2")
     window.assetVersion = isDevArea ? String(Date.now()) : '1.0.0';
     // PROD: busting statico, evita di cambiare ad ogni refresh
@@ -17,15 +14,16 @@
 
     // (opzionale) Base assoluta della libreria Framework, può tornare utile per import dinamici
     const BASE_FRAMEWORK_PATH = `https://jwsite.sharepoint.com/${sharePointFolder}/LBDSharepoint%20Code/Framework`;
-    window.BASE_FRAMEWORK_PATH = BASE_FRAMEWORK_PATH;
+    //window.BASE_FRAMEWORK_PATH = BASE_FRAMEWORK_PATH;
     
     const logger = {
         log: (...args) => doConsoleWrite && console.log(...args),
         warn: (...args) => doConsoleWrite && console.warn(...args),
         error: (...args) => doConsoleWrite && console.error(...args),
+		debug: (...args) => doConsoleWrite && console.info(...args)
     };
 
-    function venuesApp() {
+    export function venuesApp() {
         return {
             overlayContainer:null,
             editContainer:null, //container di modifica
@@ -80,11 +78,7 @@
             },
             set tableListCkAllChecked(value) {
                 this.fields.forEach(f => f.showInTableList = value);
-            },            
-            editTableListToggleAll() {
-                let newVal = !this.tableListCkAllChecked;
-                this.fields.forEach(f => f.showInTableList = newVal);
-            },
+            },         
             async init() {
                 window.assetVersion = window.assetVersion || String(Date.now()); // se non già definita
 
@@ -311,6 +305,11 @@
                 this.editTablesCols.classList.remove("modalShowHideTableColsHidden")
             },
             saveTableListShowHide(){
+                const anySelected = this.fields.some(f => f.showInTableList);
+				if (!anySelected) {
+					this.showNotification("Devi selezionare almeno una colonna da mostrare!",'warning');
+					return; // Esce senza chiudere il pop-up
+				}
                 this.showLoading("Aggiornamento colonne in corso")
                 this.editTablesCols.classList.add("modalShowHideTableColsHidden")
                 this.showHideTableListFields();
@@ -334,6 +333,13 @@
                     this.notifTimeout = setTimeout(() => {
                                             this.hideNotification();
                                         }, 4000);
+                    break;
+					case "warning":
+                        // errore → resta finché non chiudi con la X
+                        clearTimeout(this.notifTimeout);
+						this.notifTimeout = setTimeout(() => {
+												this.hideNotification();
+											}, 5000);
                     break;
                     case "error":
                         // errore → resta finché non chiudi con la X
@@ -377,5 +383,13 @@
             }
         };
     };
+
+    // per sicurezza, esponila anche in window (fallback)
+    if (typeof window !== 'undefined') {
+    window.venuesApp = venuesApp;
+    }
+
+    // opzionale: hook riconosciuto dal loader, se vuoi fare init extra post-mount
+    export async function init(host){ /* no-op o log */ }
 
 

@@ -1,0 +1,33 @@
+/Check-in
+/Check-out
+/Framework - Old
+/GestItems
+/Magazzino
+/Routing
+/Routing copy
+/EQCreate
+/Equipment List
+jsconfig.json
+test.js
+*.docx
+
+/Framework/bll
+/Framework/config
+/Framework/core
+/Framework/models
+/Framework/vendors
+/Framework/knockout-3.5.1.js
+
+/Framework/ui/components
+/Framework/ui/mvvm
+/Framework/ui/BaseViewModel.js
+/Framework/ui/views/DESEQRequest-BE
+/Framework/ui/views/EQListStockCRUD
+/Framework/ui/views/Equipment
+/Framework/ui/views/Shipments
+/Framework/ui/views/venuesCRUD
+/Framework/ui/views/venuesImport
+
+/Framework/ui/loader.boot.js
+/Framework/ui/loader.js
+/Framework/ui/manu.aspx

@@ -327,6 +327,10 @@ select {
     .notification.success {
         background-color: #28a745; /* verde */
     }
+    .notification.warning {
+        background-color: #edc100; /* verde */
+        color:#000000 !important;
+    }
 
     .notification.error {
         background-color: #dc3545; /* rosso */

@@ -1,0 +1,220 @@
+<!-- Include Alpine.js -->
+<script src="https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/LBDSharepoint%20Code/Framework/vendors/alpine.min.js" defer></script>
+
+<div x-data="eventsApp()" x-init="init()">
+  	<h2>Gestione Eventi</h2>
+
+
+  	<div class="filter-list">
+		<button class="button-icon button-add" @click="newEvent(null)">
+			<svg width="24" height="24" viewBox="0 0 24 24" aria-label="Nuovo" role="img"
+				fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M12 5v14M5 12h14"/>
+			</svg>
+		</button>
+		<button class="button-icon button-add" @click="openEditTableListShowHide()">
+			<svg xmlns="http://www.w3.org/2000/svg"
+				width="20" height="20" viewBox="0 0 24 24"
+				fill="none" stroke="#000000" stroke-width="1"
+				stroke-linecap="round" stroke-linejoin="round">               
+			<!-- occhio sbarrato -->
+			<path d="M21 12c-1.8 3-5 5-9 5s-7.2-2-9-5c1.8-3 5-5 9-5s7.2 2 9 5z"/>
+			<line x1="3" y1="3" x2="20" y2="20"/>
+			</svg>
+		</button>
+		<input
+			class="input-search"
+			type="text"
+			placeholder="Cerca..."
+			x-model="search"
+			@input="filterEvents"
+			style="margin-bottom: 1em; width: 100%; padding: 6px;"
+		/>
+	</div>
+
+  	<table id="tableList" class="table-list">
+		<thead>
+			<tr>
+				<th>&nbsp;</th>
+				<th data-name="Id" @click="sortBy('Id')">ID Evento</th>
+				<th data-name="CodeVenue" @click="sortBy('CodeVenue')">Venue</th>
+				<th data-name="EventNumber" @click="sortBy('EventNumber')">Numero</th>
+				<th data-name="EventName" @click="sortBy('EventName')">Nome</th>
+				<th data-name="Type" @click="sortBy('Type')">Tipo</th>
+				<th data-name="DateStart" @click="sortBy('DateStart')">Inizio</th>
+				<th data-name="DateEnd" @click="sortBy('DateEnd')">Fine</th>
+				<th data-name="Language" @click="sortBy('Language')">Lingua</th>
+				<th data-name="Email" @click="sortBy('Email')">E-Mail</th>
+				 <th>&nbsp;</th>
+			</tr>
+		</thead>
+		<tbody>
+			<template x-for="event in filteredEvents" :key="event.Id">
+				<tr>
+					<td>
+						<button @click="editEvent(event)">
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+									viewBox="0 0 20 20" fill="none" stroke="#000000"
+									stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M12 20h9"/>
+								<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+							</svg>
+						</button>
+					</td>
+					<td data-name="Id" x-text="event.Id"></td>
+					<td data-name="CodeVenue" x-text="event.Venue.Code"></td>
+					<td data-name="EventNumber" x-text="event.EventNumber"></td>
+					<td data-name="EventName" x-text="event.EventName"></td>
+					<td data-name="Type" x-text="event.Type"></td>
+					<td data-name="DateStart" x-text="formatDate(event.DateStart)"></td>
+					<td data-name="DateEnd" x-text="formatDate(event.DateEnd)"></td>
+					<td data-name="Language" x-text="event.Language"></td>
+					<td data-name="Email" x-text="event.Email"></td>
+					<td>
+						<button @click="deleteEvent(event.Id)">
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+								viewBox="0 0 20 20" fill="none" stroke="#000000"
+								stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 6h18"/>
+								<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+								<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+								<path d="M10 11v6M14 11v6"/>
+							</svg>
+						</button>
+					</td>
+				</tr>
+			</template>
+		</tbody>
+  </table>
+
+
+	<div class="overlay overlayhidden" id="overlayContainer">
+		<div class="modelContent modelContentHidden" id="editContainer">
+			<form @submit.prevent="saveEvent" style="margin-bottom:1em;">
+				<input type="hidden" x-model="form.Id" />
+				<div>
+					<label>Venue</label>
+					<select x-model="form.VenueId" @change="updateCodeVenue">
+						<option value="">— Seleziona —</option>
+						<template x-for="venue in venueOptions" :key="venue.Id">
+							<option :value="venue.Id" x-text="venue.VenueName + ' (' + venue.Code + ')'"></option>
+						</template>
+					</select>
+				</div>
+				<div>
+					<label>Codice Venue</label>
+					<input type="text" x-model="form.CodeVenue" readonly />
+				</div>
+
+				<div>
+					<label>Tipo</label>
+					<select x-model="form.Type" required>
+						<option value="">— Seleziona —</option>
+						<template x-for="opt in typeOptions" :key="opt">
+						<option :value="opt" x-text="opt"></option>
+						</template>
+					</select>
+				</div>
+
+				
+				<div>
+					<label>Numero Evento</label>
+					<input type="number" x-model="form.EventNumber" required />
+				</div>
+
+				<div>
+					<label>Nome Evento</label>
+					<input type="text" x-model="form.EventName" required />
+				</div>
+
+				<div>
+					<label>Lingua</label>
+					<input type="text" x-model="form.Language" />
+				</div>
+
+				<div>
+					<label>Data Inizio</label>
+					<input type="date" x-model="form.DateStart" />
+				</div>
+
+				<div>
+					<label>Data Fine</label>
+					<input type="date" x-model="form.DateEnd" />
+				</div>
+
+				<div>
+					<label>Email Evento</label>
+					<input type="text" x-model="form.Email" readonly />
+				</div>
+				<div class="modalContainerContentButtons">
+					<button class="modalContentButton" type="submit">
+						<span x-text="form.Id ? 'Aggiorna Evento' : 'Aggiungi Evento'"></span>
+						<svg xmlns="http://www.w3.org/2000/svg" 
+							width="24" height="24" viewBox="0 0 24 24" 
+							fill="none" stroke="#000" stroke-width="2" 
+							stroke-linecap="round" stroke-linejoin="round">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+							<polyline points="17 21 17 13 7 13 7 21"/>
+							<polyline points="7 3 7 8 15 8"/>
+						</svg>
+
+					</button>
+					<button @click="closeModalEdit"
+							type="button"
+							title="Chiudi"
+							class="modalContentButton">
+							Chiudi senza salvare
+							<svg xmlns="http://www.w3.org/2000/svg" 
+								width="24" height="24" viewBox="0 0 24 24" 
+								fill="none" stroke="#000" stroke-width="2" 
+								stroke-linecap="round" stroke-linejoin="round">
+								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+								<polyline points="16 17 21 12 16 7"/>
+								<line x1="21" y1="12" x2="9" y2="12"/>
+							</svg>
+						</button>
+				</div>
+			</form>
+		</div>
+
+  		<div id="divLoading" class="loading-box loading-hide">
+            <span class="close-btn" @click="hideLoading">&times;</span>
+            <p class="loading-text">Salvataggio in corso...</p>
+            <svg class="spinner" viewBox="0 0 50 50">
+                <circle
+                    cx="25" cy="25" r="20"
+                    fill="none" stroke-width="5">
+                </circle>
+            </svg>
+        </div>
+
+        <div id="editVisibilityTableCols" class="modalShowHideTableCols modalShowHideTableColsHidden" >
+            <h3>Mostra/Nascondi colonne</h3>
+
+            <!-- Checkbox Seleziona/Togli tutti -->
+            <label class="checkbox-item">
+                <input type="checkbox" x-model="tableListCkAllChecked" @change="editTableListToggleAll()">
+                <span>Seleziona/Togli tutti</span>
+            </label>
+
+            <div class="checkbox-list-columns">
+                <template x-for="(field, index) in fields" :key="field.name">
+                    <label class="checkbox-item">
+                        <input type="checkbox" x-model="field.showInTableList">
+                        <span x-text="field.label"></span>
+                    </label>
+                </template>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn" @click="saveTableListShowHide()">Conferma e chiudi</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="divNotification" class="notification">
+        <span id="notifMsg"></span>
+        <span class="close-btn" @click="hideNotification">&times;</span>
+    </div>
+</div>

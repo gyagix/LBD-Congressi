@@ -19,10 +19,10 @@
         log: (...args) => doConsoleWrite && console.log(...args),
         warn: (...args) => doConsoleWrite && console.warn(...args),
         error: (...args) => doConsoleWrite && console.error(...args),
-		debug: (...args) => doConsoleWrite && console.info(...args),
+		debug: (...args) => doConsoleWrite && console.info(...args)
     };
 
-	function eventsApp() {
+	export function eventsApp() {
 		return {
 			overlayContainer:null,
 			editContainer:null, //container di modifica
@@ -72,10 +72,6 @@
 			set tableListCkAllChecked(value) {
 				this.fields.forEach(f => f.showInTableList = value);
 			},            
-			editTableListToggleAll() {
-				let newVal = !this.tableListCkAllChecked;
-				this.fields.forEach(f => f.showInTableList = newVal);
-			},
 			async init() {
 				window.assetVersion = window.assetVersion || String(Date.now()); // se non già definita
 
@@ -274,7 +270,7 @@
 				},
 			
 			showHideTableListFields(){
-
+				
 				this.fields.forEach(field => {   
 					//logger.log("showHideTableListFields",'field',field)
 					const tdFields = this.tableList.querySelectorAll(`td[data-name="${field.name}"]`);
@@ -305,6 +301,11 @@
 				this.editTablesCols.classList.remove("modalShowHideTableColsHidden")
 			},
 			saveTableListShowHide(){
+				const anySelected = this.fields.some(f => f.showInTableList);
+				if (!anySelected) {
+					this.showNotification("Devi selezionare almeno una colonna da mostrare!",'warning');
+					return; // Esce senza chiudere il pop-up
+				}
 				this.showLoading("Aggiornamento colonne in corso")
 				this.editTablesCols.classList.add("modalShowHideTableColsHidden")
 				this.showHideTableListFields();
@@ -321,7 +322,14 @@
                     clearTimeout(this.notifTimeout);
                     this.notifTimeout = setTimeout(() => {
                                             this.hideNotification();
-                                        }, 4000);
+                                        }, 3000);
+                    break;
+					case "warning":
+                        // errore → resta finché non chiudi con la X
+                        clearTimeout(this.notifTimeout);
+						this.notifTimeout = setTimeout(() => {
+												this.hideNotification();
+											}, 5000);
                     break;
                     case "error":
                         // errore → resta finché non chiudi con la X
