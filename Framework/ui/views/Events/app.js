@@ -245,7 +245,7 @@
 						this.showNotification('Nome già presente. Scegli un nome diverso.','error');
 					} else {
 						logger.log('[DEBUG] app.js->saveEvent: Errore generico:', e);
-						this.showNotification('Errore nel salvataggio, controlla logger.','error');						
+						this.showNotification('Errore nel salvataggio<br />' + (e?.message || ''),'error');				
 					}
 					this.hideLoading();
 				}
@@ -258,7 +258,7 @@
 					await this.loadEvents();
 				} catch (e) {
 					logger.error('Errore cancellazione evento:', e);
-					this.showNotification('Errore nella cancellazione, controlla logger.','error');
+					this.showNotification('Errore nella cancellazione<br />' + (e?.message || ''),'error');
 				}
 			},
 
@@ -313,7 +313,7 @@
 				this.closeOverlay();
 			},
             showNotification(message, type){
-                this.notifyMsg.textContent = message;
+                this.notifyMsg.innerHTML  = message;
                 this.notif.className = `notification ${type} show`;
 
                 // se è successo: autoclose dopo 3 secondi
@@ -359,6 +359,7 @@
             },
             closeContentEditor(){                
                 this.editContainer.classList.add('modelContentHidden');
+				this.hideNotification()
             },
             showLoading(myText = "Salvataggio in corso"){
                 this.openOverlay();

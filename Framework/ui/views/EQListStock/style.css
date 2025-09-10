@@ -1,65 +1,67 @@
-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
-    margin-bottom: 15px;
-}
-        
-form label {
-    display: block;
-    font-size: 12px;
-    margin-bottom: 2px;
-}
+	form {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 10px;
+		margin-bottom: 15px;
+	}
 
-form input,
-form textarea,
-form button,
-form select {
-    padding: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-}
+	form label {
+		display: block;
+		font-size: 12px;
+		margin-bottom: 2px;
+	}
 
-form textarea {
-    min-height: 40px;
-}
+	form input,
+	form textarea,
+	form button,
+	form select {
+		padding: 5px;
+		font-size: 14px;
+		width: 100%;
+		box-sizing: border-box;
+	}
 
-form button {
-    grid-column: span 2;
-    cursor: pointer;
-}
+	form textarea {
+		min-height: 40px;
+	}
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 14px;
-}
+	form button {
+		grid-column: span 2;
+		cursor: pointer;
+	}
 
-th,
-td {
-    border: 1px solid #ddd;
-    padding: 6px 10px;
-}
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		font-size: 14px;
+	}
 
-th {
-    background-color: #f4f4f4;
-    cursor: pointer;
-}
+	th,
+	td {
+		border: 1px solid #ddd;
+		padding: 6px 10px;
+	}
 
-tr:nth-child(even) {
-    background-color: #fafafa;
-}
+	th {
+		background-color: #f4f4f4;
+		cursor: pointer;
+	}
 
-input[type='text'],
-input[type='number'],
-input[type='date'],
-input[type='time'],
-textarea,
-select {
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
+	tr:nth-child(even) {
+		background-color: #fafafa;
+	}
+
+	input[type='text'],
+	input[type='number'],
+	input[type='date'],
+	input[type='time'],
+	textarea,
+	select {
+		border: 1px solid #ccc;
+		border-radius: 3px;
+	}
+
+	
 /*Filtri elenco*/
 
 	.filter-list{
@@ -122,8 +124,24 @@ select {
     }
     .table-list th:nth-child(2),
     .table-list td:nth-child(2) {
-        width: 50px;
-        }
+        width: 55px;
+    }
+	.table-list th:nth-child(3),
+    .table-list td:nth-child(3) {
+        width: 145px;
+    }
+	
+	.table-list th:nth-child(5),
+    .table-list td:nth-child(5) {
+        width: 105px;
+    }
+	.table-list th:nth-last-child(2),
+    .table-list td:nth-last-child(2) {
+        width: 115px;
+    }
+	.table-list td:nth-last-child(2) {
+       text-align: center;
+    }
 
 	.table-list-hide{
 		opacity:0;
@@ -136,6 +154,18 @@ select {
         transition: opacity 0.7s ease;
 		display: none	;
 	}
+
+	
+	.table-list td.eqList-td-cell-discontinued{
+		font-style: italic;
+		color:#dc3545;
+		text-decoration-line: line-through;
+	}
+	.table-list td.eqList-td-discontinued{
+		font-style: italic;
+		color:#dc3545;
+	}
+
 
 /*Overlay modifica*/
     .overlay {
@@ -161,8 +191,8 @@ select {
         background: #fff;
         padding: 20px;
         border-radius: 10px;
-        width: 80%;
-        max-width: 90%;
+        width: 60%;
+        max-width: 80%;        
         box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         margin:auto;
         max-height: 80vh;          /* limite in altezza */
@@ -183,6 +213,10 @@ select {
 	.modelContent form{
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr; /* tre colonne */
+		grid-template-areas:
+			"code desc desc"
+			"qty cat dis"
+			"btn btn btn";
 		gap: 1em;
 	}
 	.modelContent form > div {
@@ -191,9 +225,42 @@ select {
 	}
 
 	/* Il campo Note prende entrambe le colonne */
-	.modelContent form > div:has(textarea) {
-		grid-column: 1 / -1;
+	.modelContent form > div:nth-child(1) {
+		grid-area: code;
 	}
+
+	/* Seconda riga: 3 campi */
+	.modelContent form  > div:nth-child(2) {
+		grid-area: desc;
+	}
+
+	.modelContent form  > div:nth-child(3) {
+		grid-area: qty;
+	}
+
+	.modelContent form  > div:nth-child(4) {
+		grid-area: cat;
+	}
+
+	.modelContent form  > div:nth-child(5) {
+		grid-area: dis;
+	}
+	.modelContent form  > div:nth-child(5) label {		
+		justify-self: start; /* allinea l'intero div nella cella */
+		align-self: center;   /* opzionale: in alto */
+	}
+	.modelContent form  > div:nth-child(5) input {		
+		justify-self: start; /* allinea l'intero div nella cella */
+		align-self: center;   /* opzionale: in alto */
+	}
+
+	.modelContent form > .modelContentFormButtons {
+		grid-area: btn;
+		display: flex;
+		gap: 1rem; /* spazio tra bottoni */
+    	flex-direction: row;
+	}
+
 
     .modalContentButton{
         display: inline-flex;      /* layout orizzontale con flex */
@@ -269,7 +336,7 @@ select {
 
     .notification {
         position: fixed;
-        top: 20px;
+        top: 15%;
         left: 50%;
         transform: translateX(-50%);
         min-width: 250px;
@@ -295,8 +362,8 @@ select {
     }
     
     .notification.warning {
-        background-color: #edc100; /* verde */
-        color:#000000;
+        background-color: #edc100; /* arancione */
+		color:#000000;
     }
 
     .notification.error {
@@ -334,52 +401,52 @@ select {
     }
 
     .loading-box .close-btn {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
+		position: absolute;
+		top: 8px;
+		right: 10px;
+		font-size: 18px;
+		font-weight: bold;
+		cursor: pointer;
     }
 
     .loading-box p {
-      font-size: 18px;
-      color: #2c4d80;
-      margin: 15px 0;
-      font-weight: 500;
+		font-size: 18px;
+		color: #2c4d80;
+		margin: 15px 0;
+		font-weight: 500;
     }
 
   /* Spinner SVG */
     .spinner {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto;
-      animation: rotate 1s linear infinite;
+		width: 40px;
+		height: 40px;
+		margin: 0 auto;
+		animation: rotate 1s linear infinite;
     }
 
     @keyframes rotate {
-      100% {
-        transform: rotate(360deg);
-      }
+		100% {
+			transform: rotate(360deg);
+		}
     }
 
     .spinner circle {
-      stroke: #2c4d80;
-      stroke-linecap: round;
-      animation: dash 1.5s ease-in-out infinite;
+		stroke: #2c4d80;
+		stroke-linecap: round;
+		animation: dash 1.5s ease-in-out infinite;
     }
 
     @keyframes dash {
-      0% {
-        stroke-dasharray: 1, 150;
-        stroke-dashoffset: 0;
-      }
-      50% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -35;
-      }
-      100% {
-        stroke-dasharray: 90, 150;
-        stroke-dashoffset: -124;
-      }
+		0% {
+			stroke-dasharray: 1, 150;
+			stroke-dashoffset: 0;
+		}
+		50% {
+			stroke-dasharray: 90, 150;
+			stroke-dashoffset: -35;
+		}
+		100% {
+			stroke-dasharray: 90, 150;
+			stroke-dashoffset: -124;
+		}
     }

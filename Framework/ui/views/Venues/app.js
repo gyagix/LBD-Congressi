@@ -114,9 +114,6 @@
 
                 this.closeOverlay();
             },
-
-
-
             filterVenues() {
                 const s = this.search.toLowerCase();
                 this.filteredVenues = this.venues.filter((v) =>
@@ -255,7 +252,7 @@
                         this.showNotification('Nome già presente. Scegli un nome diverso.','error');
                     } else {
                         logger.log('[DEBUG] app.js->saveVenue: Errore generico:', e);
-                        this.showNotification('Errore nel salvataggio, controlla console.','error');
+                        this.showNotification('Errore nel salvataggio<br />' + (e?.message || ''),'error');
                     }          
                 }
             },
@@ -263,14 +260,14 @@
             async deleteVenue(id) {
                 if (!confirm('Sei sicuro di voler eliminare questa venue?')) return;
                 try {
-                // se la tua delete vuole l'oggetto:
-                // await this.venueLogic.delete({ Id: id });
-                await this.venueLogic.delete(id);
-                this.closeContentEditor();
-                await this.loadVenues();
+                    // se la tua delete vuole l'oggetto:
+                    // await this.venueLogic.delete({ Id: id });
+                    await this.venueLogic.delete(id);
+                    this.closeContentEditor();
+                    await this.loadVenues();
                 } catch (e) {
                     logger.error('Errore cancellazione venue:', e);
-                    this.showNotification('Errore nella cancellazione, controlla console.','error');
+                    this.showNotification('Errore nella cancellazione<br />' + (e?.message || ''),'error');
                 }
             },
 
@@ -323,7 +320,7 @@
                 return d.toLocaleDateString('it-IT');
             },
             showNotification(message, type){
-                this.notifyMsg.textContent = message;
+                this.notifyMsg.innerHTML  = message;
                 this.notif.className = `notification ${type} show`;
 
                 // se è successo: autoclose dopo 3 secondi
@@ -369,6 +366,7 @@
             },
             closeContentEditor(){                
                 this.editContainer.classList.add('modelContentHidden');
+                this.hideNotification()
             },
             showLoading(myText = "Salvataggio in corso"){
                 this.openOverlay();

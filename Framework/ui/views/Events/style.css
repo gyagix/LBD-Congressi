@@ -328,7 +328,7 @@ select {
         background-color: #28a745; /* verde */
     }
     .notification.warning {
-        background-color: #edc100; /* verde */
+        background-color: #edc100; /* arancione */
         color:#000000 !important;
     }
 

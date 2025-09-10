@@ -80,50 +80,17 @@ select {
 	}
 
 /*Tabella elenco*/
-	.list-scroll{
-        height: 55svh;                 /* altezza dinamica */
-        overflow-y: auto;
-        overflow-x: auto;              /* abilita scroll orizzontale se necessario */
-        -webkit-overflow-scrolling: touch;    
-            opacity: 1;
-            display: block;
-            transition: opacity 0.7s ease;
-    }
-    /*Tabella elenco*/
-    .table-list{
-        width: 100%;
-        table-layout: fixed;           /* colonne fisse */
-    }
-    .table-list th,
-    .table-list td {
-        padding: 6px 10px;
-        border: 1px solid #ddd;      
-        text-align: left;
-    }
-    
-    /* Header della tabella fisso dentro .list-scroll */
-    .table-list thead th{
-        position: sticky;
-        top: 0;
-        background: #f4f4f4;
-        z-index: 1;
-        border-bottom: 2px solid #ccc;
-    }
-    
+	.table-list{
+		opacity: 1;
+		display: block;
+		transition: opacity 0.7s ease;
+	}
 	.table-list tbody tr:hover{
         background-color: #cccccc;
 	}
-
-	.table-list th:first-child,
-    .table-list td:first-child,
-    .table-list th:last-child,
-    .table-list td:last-child {
-        width: 60px;
-    }
-    .table-list th:nth-child(2),
-    .table-list td:nth-child(2) {
-        width: 50px;
-        }
+	.table-list th:first-child,.table-list th:last-child{
+		width:30px;
+	}
 
 	.table-list-hide{
 		opacity:0;
@@ -163,6 +130,7 @@ select {
         border-radius: 10px;
         width: 80%;
         max-width: 90%;
+        max-height: 80%;
         box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         margin:auto;
         max-height: 80vh;          /* limite in altezza */
@@ -292,11 +260,6 @@ select {
 
     .notification.success {
         background-color: #28a745; /* verde */
-    }
-    
-    .notification.warning {
-        background-color: #edc100; /* verde */
-        color:#000000;
     }
 
     .notification.error {
