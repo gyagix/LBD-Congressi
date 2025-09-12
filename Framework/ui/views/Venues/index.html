@@ -8,6 +8,48 @@
                     <path d="M12 5v14M5 12h14"/>
                 </svg>
             </button>
+                    
+            <!--onclick="window.location.href='https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/venuesImport.aspx'"-->
+            <button type="button"
+                @click="goToVenuesImport"
+                title="Importa Venue da Excel"
+                class="button-icon button-add">
+
+                <!-- Icona Importa Excel (angolo piegato + X verde) -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="48" height="48"
+                        role="img" aria-labelledby="title-xlsx">
+                    <title id="title-xlsx">Importa file Excel</title>
+
+                    <!-- contorno foglio -->
+                    <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/>
+                        <!-- angolo piegato -->
+                        <path d="M14 3v5h5"/>
+                        <!-- freccia verso il basso -->
+                        <path d="M12 17v-4M9.5 15.5L12 18l2.5-2.5"/>
+                    </g>
+
+                    <!-- quadratino verde con X bianca -->
+                    <rect x="8.5" y="9" width="7" height="5" rx="0.8" ry="0.8" fill="#2d9a3a"/>
+                    <text x="12" y="12.6"
+                            text-anchor="middle"
+                            font-family="Arial, Helvetica, sans-serif"
+                            font-size="4"
+                            font-weight="700"
+                            fill="#fff">
+                        X
+                    </text>
+                    </svg>
+                    <!--
+                    <svg width="20" height="20" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"></path>
+                    </svg>
+                -->
+                    
+            </button>
             <button class="button-icon button-add" @click="openEditTableListShowHide()">
                 <svg xmlns="http://www.w3.org/2000/svg"
                     width="20" height="20" viewBox="0 0 24 24"
@@ -191,19 +233,7 @@
                     </button>
                 </div>
                 <div>
-
-                    <!-- Pulsante Importa -->
-                    <!--
-                    <button type="button"
-                        onclick="window.location.href='https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/venuesImport.aspx'"
-                        title="Importa da Excel"
-                        style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer">
-                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"></path>
-                        </svg>
-                        Importa
-                    </button>
-                    -->
+                    &nbsp;
                 </div>
                 <div>
                     <button @click="closeModalEdit"

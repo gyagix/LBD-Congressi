@@ -25,7 +25,7 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item fs-6" href="https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/events-debug.aspx" target="_blank">
+              <a class="dropdown-item fs-6" href="https://jwsite.sharepoint.com/sites/ita-lbd-bethelfacilitysupport/SitePages/events.aspx" target="_blank">
                 <i class="nco32 nco32-calendar fs-6"></i> Eventi
               </a>
             </li>

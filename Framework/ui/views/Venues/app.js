@@ -13,6 +13,7 @@
     // window.assetVersion = '1.1.1'; // per produzione, evita busting ad ogni refresh
 
     // (opzionale) Base assoluta della libreria Framework, può tornare utile per import dinamici
+    const BASE_URL_SITE = `https://jwsite.sharepoint.com/${sharePointFolder}`;
     const BASE_FRAMEWORK_PATH = `https://jwsite.sharepoint.com/${sharePointFolder}/LBDSharepoint%20Code/Framework`;
     //window.BASE_FRAMEWORK_PATH = BASE_FRAMEWORK_PATH;
     
@@ -271,7 +272,9 @@
                 }
             },
 
-
+            goToVenuesImport(){
+                window.location.href = BASE_URL_SITE + '/SitePages/venuesImport.aspx';
+            },
             showHideTableListFields(){
                 this.fields.forEach(field => {   
                     const tdFields = this.tableList.querySelectorAll(`td[data-name="${field.name}"]`);
