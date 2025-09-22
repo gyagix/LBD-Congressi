@@ -6,7 +6,7 @@ const DEFAULTS = {
   FILE_JS:   "app.js",
   PROVIDER_NAME: "",
   TARGET: "view-host",
-  VERSION: "2025-09-05-1035",
+  VERSION: "20250913-1000",
   FORCE_ALPINE_DATA: true,
   AUTO_DETECT_XDATA: true,
   CSS_LINK_ID: "loader-css-link",

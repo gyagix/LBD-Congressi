@@ -1,0 +1,121 @@
+<div class="import-header">
+  <h1>Importazione batch Venues</h1>
+  <a href="./venues.aspx" class="btn-secondary" data-interception="off">← Torna alla gestione Venues</a>
+</div>
+
+<div class="import-main" x-data="importApp()" x-init="init()">
+
+  <!-- STEP 1: scelta file -->
+  <div class="card" x-show="step === 1">
+    <h2>1) Seleziona il file Excel</h2>
+    <p class="muted">Accettiamo .xlsx / .xls (la prima riga deve contenere le intestazioni).</p>
+
+    <input type="file" @change="onFileChosen($event)" accept=".xlsx,.xls" />
+    <div class="actions">
+      <button class="btn-secondary" @click="downloadTemplate()">Scarica template Excel</button>
+      <button class="btn-primary" :disabled="!file" @click="parseFile()">Continua →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: mappatura colonne -->
+  <div class="card" x-show="step === 2">
+    <h2>2) Mappa le colonne</h2>
+    <p class="muted">Abbiamo provato a riconoscere automaticamente. Puoi correggere.</p>
+
+    <table class="map-table">
+      <thead>
+        <tr><th>Campo lista</th><th>Colonna file</th></tr>
+      </thead>
+      <tbody>
+        <template x-for="f in fields" :key="f">
+          <tr>
+            <td x-text="f"></td>
+            <td>
+              <select x-model="mapping[f]">
+                <option value="">— ignora —</option>
+                <template x-for="h in headers" :key="h">
+                  <option :value="h" x-text="h"></option>
+                </template>
+              </select>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div>
+        <label>Modalità:</label>
+        <select x-model="mode">
+          <option value="create">Crea nuovi (errore se duplicato)</option>
+          <option value="upsert_name">Upsert per VenueName</option>
+          <option value="upsert_code">Upsert per Code</option>
+        </select>
+      </div>
+      <div>
+        <label>Anteprima righe</label>
+        <input type="number" min="1" max="50" x-model.number="previewCount" @change="buildPreview()" />
+      </div>
+    </div>
+
+    <h3>Anteprima</h3>
+    <div class="preview">
+      <div class="preview-row header">
+        <template x-for="f in fields" :key="f">
+          <div x-text="f"></div>
+        </template>
+      </div>
+      <template x-for="(r,i) in previewRows" :key="i">
+        <div class="preview-row">
+          <template x-for="f in fields" :key="f">
+            <div x-text="r[f] ?? ''"></div>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" @click="step=1">← Indietro</button>
+      <button class="btn-primary" @click="startImport()">Avvia import →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: esecuzione + risultati -->
+  <div class="card" x-show="step === 3">
+    <h2>3) Import in corso…</h2>
+    <div class="progress">
+      <div class="bar" :style="{ width: progressPct + '%' }"></div>
+    </div>
+    <p x-text="`${done}/${total} processati`"></p>
+    <button class="btn-secondary" @click="cancel=true" :disabled="done>=total">Annulla</button>
+
+    <h3>Risultati</h3>
+    <div class="results-wrap">
+      <table class="results">
+        <thead>
+          <tr>
+            <th>#</th><th>Status</th><th>Messaggio</th><th>Id</th><th>VenueName</th><th>Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="r in results" :key="r._row">
+            <tr :class="r.status">
+              <td x-text="r._row"></td>
+              <td x-text="r.status"></td>
+              <td x-text="r.message"></td>
+              <td x-text="r.id ?? ''"></td>
+              <td x-text="r.data?.VenueName ?? ''"></td>
+              <td x-text="r.data?.Code ?? ''"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" @click="downloadReport()">Scarica report CSV</button>
+      <a class="btn-primary" href="./venues.aspx" data-interception="off">Chiudi</a>
+    </div>
+  </div>
+
+</div>

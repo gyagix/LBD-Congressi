@@ -1,8 +1,8 @@
 
-<div x-data="projectsApp()" x-init="init()">
-  	<h2>Gestione Eventi</h2>
+<div x-data="projectApp()" x-init="init()">
+  	<h2>Gestione Progetti</h2>
   	<div class="filter-list">
-		<button class="button-icon button-add" @click="newEvent(null)">
+		<button class="button-icon button-add" @click="newProject(null)">
 			<svg width="24" height="24" viewBox="0 0 24 24" aria-label="Nuovo" role="img"
 				fill="none" stroke="#000000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
 				<path d="M12 5v14M5 12h14"/>
@@ -23,7 +23,7 @@
 			type="text"
 			placeholder="Cerca..."
 			x-model="search"
-			@input="filterEvents"
+			@input="filterProjects"
 			style="margin-bottom: 1em; width: 100%; padding: 6px;"
 		/>
 	</div>
@@ -32,6 +32,7 @@
 		<table id="tableList" class="table-list">
 			<thead>
 				<tr>
+					<th>&nbsp;</th>
 					<th>&nbsp;</th>
 					<th data-name="Id" @click="sortBy('Id')">ID</th>
 					<th data-name="ProjectCode" @click="sortBy('ProjectCode')">Codice</th>
@@ -44,10 +45,10 @@
 				</tr>
 			</thead>
 			<tbody>
-				<template x-for="project in filteredProjects" :key="project.Id">
+				<template x-for="item in filteredProjects" :key="item.Id">
 					<tr>
-						<td>
-							<button @click="editProject(project)">
+						<td class="">
+							<button @click="editProject(item)">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
 										viewBox="0 0 20 20" fill="none" stroke="#000000"
 										stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
@@ -56,15 +57,29 @@
 								</svg>
 							</button>
 						</td>
-						<td data-name="Id" x-text="project.Id"></td>
-						<td data-name="ProjectCode" x-text="project.ProjectCode"></td>
-						<td data-name="ProjectDescription" x-text="project.ProjectDescription"></td>
-						<td data-name="TipoProgetto" x-text="project.TipoProgetto"></td>
-						<td data-name="Anno" x-text="project.Anno"></td>
-						<td data-name="VenueName" x-text="project.Venue.VenueName"></td>
-						<td data-name="Designer" x-text="project.Designer.Cognome project.Designer.Nome"></td>
 						<td>
-							<button @click="deleteProject(project.Id)">
+							<!-- Accanto al bottone Modifica -->
+							<button @click="openAssociations(item)" title="Associa Eventi e Spedizioni">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+									viewBox="0 0 24 24" fill="none" stroke="#000000"
+									stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="18" cy="5" r="3"/>
+									<circle cx="6" cy="12" r="3"/>
+									<circle cx="18" cy="19" r="3"/>
+									<line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+									<line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+								</svg>
+							</button>
+						</td>
+						<td data-name="Id" x-text="item.Id"></td>
+						<td data-name="ProjectCode" x-text="item.ProjectCode"></td>
+						<td data-name="ProjectDescription" x-text="item.ProjectDescription"></td>
+						<td data-name="TipoProgetto" x-text="item.TipoProgetto"></td>
+						<td data-name="Anno" x-text="item.Anno"></td>
+						<td data-name="VenueName" x-text="item.Venue.VenueName"></td>
+						<td data-name="Designer" x-text="item.Designer.Cognome + ' ' + item.Designer.Nome"></td>
+						<td>
+							<button @click="deleteProject(item.Id)">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
 									viewBox="0 0 20 20" fill="none" stroke="#000000"
 									stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
@@ -84,7 +99,7 @@
 
 	<div class="overlay overlayhidden" id="overlayContainer">
 		<div class="modelContent modelContentHidden" id="editContainer">
-			<form @submit.prevent="saveEvent" style="margin-bottom:1em;">
+			<form @submit.prevent="saveProject" style="margin-bottom:1em;">
 				<input type="hidden" x-model="form.Id" />
 				<div>
 					<label>Venue</label>
@@ -96,53 +111,47 @@
 					</select>
 				</div>
 				<div>
-					<label>Codice Venue</label>
-					<input type="text" x-model="form.CodeVenue" readonly />
-				</div>
-
-				<div>
-					<label>Tipo</label>
-					<select x-model="form.Type" required>
+					<label>Designer</label>
+					<select x-model="form.DesignerId" @change="updateDesigner">
 						<option value="">— Seleziona —</option>
-						<template x-for="opt in typeOptions" :key="opt">
-						<option :value="opt" x-text="opt"></option>
+						<template x-for="designer in designerOptions" :key="designer.Id">
+							<option :value="designer.Id" x-text="designer.Cognome + ' ' + designer.Nome"></option>
 						</template>
 					</select>
+				</div>				
+				
+				<div>
+					<label>Tipo progetto</label>
+					<select x-model="form.TipoProgetto">
+					<option value="">— Seleziona —</option>
+					<template x-for="t in typeOptions" :key="t">
+						<option :value="t" x-text="t"></option>
+					</template>
+					</select>
+				</div>
+
+
+				<div>
+					<label>Anno</label>
+					<input type="number" x-model="form.Anno" required />
 				</div>
 
 				
 				<div>
-					<label>Numero Evento</label>
-					<input type="number" x-model="form.EventNumber" required />
+					<label>Codice Progetto</label>
+					<input type="text" x-model="form.ProjectCode" required />
 				</div>
 
 				<div>
-					<label>Nome Evento</label>
-					<input type="text" x-model="form.EventName" required />
+					<label>Descrizione Progetto</label>
+					<input type="text" x-model="form.ProjectDescription" required />
 				</div>
 
-				<div>
-					<label>Lingua</label>
-					<input type="text" x-model="form.Language" />
-				</div>
 
-				<div>
-					<label>Data Inizio</label>
-					<input type="date" x-model="form.DateStart" />
-				</div>
 
-				<div>
-					<label>Data Fine</label>
-					<input type="date" x-model="form.DateEnd" />
-				</div>
-
-				<div>
-					<label>Email Evento</label>
-					<input type="text" x-model="form.Email" readonly />
-				</div>
 				<div class="modalContainerContentButtons">
 					<button class="modalContentButton" type="submit">
-						<span x-text="form.Id ? 'Aggiorna Evento' : 'Aggiungi Evento'"></span>
+						<span x-text="form.Id ? 'Aggiorna Progetto' : 'Aggiungi Progetto'"></span>
 						<svg xmlns="http://www.w3.org/2000/svg" 
 							width="24" height="24" viewBox="0 0 24 24" 
 							fill="none" stroke="#000" stroke-width="2" 
@@ -204,6 +213,202 @@
                 <button class="btn" @click="saveTableListShowHide()">Conferma e chiudi</button>
             </div>
         </div>
+
+		<!-- MODAL ASSOCIAZIONI -->
+		<div class="modelContentAssociations modelContentAssociationsHidden" x-show="ui.showAssociations" id="editContainerAssociations" x-cloak>
+			<div class="model">
+				<div class="modelHeader">
+					<h3 x-text="assoc.project ? `Associa Eventi e Spedizioni a Progetto ${assoc.project.ProjectCode || ''} - ${assoc.project.ProjectDescription || ''}` : ''"> </h3>
+				</div>
+				<div class="linked-data-container">						
+					<div class="section-container">
+						<!-- EVENTI DISPONIBILI -->
+							<div class="section-header">
+								<h4>Eventi (filtrati per venue)</h4>
+								<input type="text" placeholder="Cerca evento…" x-model="assoc.events.search" @input.debounce.300ms="filterEvents()" size="30">
+								<button class="section-button" @click="reloadEvents()" title="Ricarica">
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 28 28" fill="none" 
+										stroke="#000000" stroke-width="2" 
+										stroke-linecap="round" 
+										stroke-linejoin="round">
+										<!-- Freccia -->
+										<polyline points="23 4 23 10 17 10"/>
+										<!-- Curva della ricarica -->
+										<path d="M20.49 20.49a9 9 0 1 1 0-12.73"/>
+									</svg>
+								</button>
+							</div>
+							
+							<div class="section-content">
+								<table>
+									<thead>
+										<tr><th>#</th><th>ID</th><th>Nome</th><th>Data</th><th></th></tr>
+									</thead>
+									<tbody>
+										<template x-for="(ev, i) in assoc.events.availableFiltered" :key="ev.Id">
+											<tr>
+											<td x-text="i+1"></td>
+											<td x-text="ev.Id"></td>
+											<td x-text="ev.EventName || ''"></td>
+											<td x-text="formatDate(ev.DateStart) + (ev.DateEnd ? (' → ' + formatDate(ev.DateEnd)) : '')"></td>
+											<td>
+												<button class="section-button" @click="addEvent(ev)">
+													<!-- Icona Aggiungi (cerchio con +) -->
+													<svg role="img" aria-label="Aggiungi elemento" xmlns="http://www.w3.org/2000/svg" 
+															width="20" height="20" viewBox="0 0 24 24" 
+															fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+															stroke-linejoin="round">
+														<title>Aggiungi</title>
+														<circle cx="12" cy="12" r="10"></circle>
+														<line x1="12" y1="8" x2="12" y2="16"></line>
+														<line x1="8" y1="12" x2="16" y2="12"></line>
+													</svg>
+												</button>
+											</td>
+											</tr>
+										</template>
+									</tbody>
+								</table>
+							</div>
+					</div>
+
+					<div class="section-container">
+						<!-- EVENTI ASSOCIATI -->
+							<div class="section-header">
+								<h4>Eventi associati</h4>
+								<div></div>
+								<div></div>
+							</div>
+							<div class="section-content">
+								<table>
+									<thead>
+									<tr><th>ID</th><th>Nome</th><th>Inizio</th><th>Fine</th><th></th></tr>
+									</thead>
+									<tbody>
+									<template x-for="link in assoc.events.linked" :key="link._key">
+										<tr>
+											<td x-text="link.EventId"></td>
+											<td x-text="link._display || ''"></td>
+											<td x-text="link.PeriodBegins || ''"></td>
+											<td x-text="link.PeriodEnds || ''"></td>
+											<td>
+												<button class="section-button" @click="removeEvent(link)">
+													<svg role="img" aria-label="Rimuovi elemento" xmlns="http://www.w3.org/2000/svg" 
+														width="20" height="20" viewBox="0 0 24 24" 
+														fill="none" 
+														stroke="#000000" stroke-width="2" 
+														stroke-linecap="round" stroke-linejoin="round">
+														<title>Rimuovi</title>
+														<circle cx="12" cy="12" r="10"></circle>
+														<line x1="8" y1="12" x2="16" y2="12"></line>
+													</svg>
+												</button>
+											</td>
+										</tr>
+									</template>
+									</tbody>
+								</table>
+							</div>
+					</div>
+
+						<!-- SPEDIZIONI DISPONIBILI -->
+					<div class="section-container">
+							<div class="section-header">
+								<h4>Spedizioni (filtrate per venue)</h4>
+								<input type="text" placeholder="Cerca spedizione…" x-model="assoc.shipments.search" @input.debounce.300ms="filterShipping()" size="30">
+								<button class="section-button" @click="reloadShipping()" title="Ricarica">
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 28 28" fill="none" 
+										stroke="#000000" stroke-width="2" 
+										stroke-linecap="round" 
+										stroke-linejoin="round">
+										<!-- Freccia -->
+										<polyline points="23 4 23 10 17 10"/>
+										<!-- Curva della ricarica -->
+										<path d="M20.49 20.49a9 9 0 1 1 0-12.73"/>
+									</svg>
+								</button>					
+							</div>
+
+							<div class="section-content">
+								<table>
+									<thead>
+										<tr><th>#</th><th>ID</th><th>Nome</th><th>Data</th><th></th></tr>
+									</thead>
+									<tbody>
+										<template x-for="(sh, i) in assoc.shipments.availableFiltered" :key="sh.Id">
+											<tr>
+											<td x-text="i+1"></td>
+											<td x-text="sh.Id"></td>
+											<td x-text="sh.ShipmentName || ''"></td>
+											<td x-text="formatDate(sh.PickupDate) + (sh.DeliveryDate ? (' → ' + formatDate(sh.DeliveryDate)) : '')"></td>
+											<td>
+												<button class="section-button" @click="addShipment(sh)">
+													<!-- Icona Aggiungi (cerchio con +) -->
+													<svg role="img" aria-label="Aggiungi elemento" xmlns="http://www.w3.org/2000/svg" 
+															width="20" height="20" viewBox="0 0 24 24" 
+															fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+															stroke-linejoin="round">
+														<title>Aggiungi</title>
+														<circle cx="12" cy="12" r="10"></circle>
+														<line x1="12" y1="8" x2="12" y2="16"></line>
+														<line x1="8" y1="12" x2="16" y2="12"></line>
+													</svg>
+												</button>
+											</td>
+											</tr>
+										</template>
+									</tbody>
+								</table>
+							</div>
+					</div>
+					
+					
+
+						<!-- SPEDIZIONI ASSOCIATE -->
+					<div class="section-content">
+						<div class="section-header">
+							<h4>Spedizioni associate</h4>
+							<div></div>	
+							<div>	</div>
+						</div>								
+						<div class="section-content">
+							<table>
+								<thead>
+								<tr><th>ID</th><th>Nome</th><th>Inizio</th><th>Fine</th><th></th></tr>
+								</thead>
+								<tbody>
+								<template x-for="link in assoc.shipments.linked" :key="link._key">
+									<tr>
+										<td x-text="link.ShippingId"></td>
+										<td x-text="link._display || ''"></td>
+										<td x-text="link.PeriodBegins || ''"></td>
+										<td x-text="link.PeriodEnds || ''"></td>
+										<td>
+											<button class="section-button" @click="removeShipment(link)">
+												<svg role="img" aria-label="Rimuovi elemento" xmlns="http://www.w3.org/2000/svg" 
+													width="20" height="20" viewBox="0 0 24 24" 
+													fill="none" 
+													stroke="#000000" stroke-width="2" 
+													stroke-linecap="round" stroke-linejoin="round">
+													<title>Rimuovi</title>
+													<circle cx="12" cy="12" r="10"></circle>
+													<line x1="8" y1="12" x2="16" y2="12"></line>
+												</svg>
+											</button>
+										</td>
+									</tr>
+								</template>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="container-buttons">
+					<button class="btn-primary" @click="saveAssociations()">Salva le modifiche</button>
+					<button class="" @click="resetAssociations()">Annulla modifiche</button>
+					<button class="" @click="closeAssociations()">Chiudi senza salvare</button>
+				</div>
+		</div>
 
     </div>
 

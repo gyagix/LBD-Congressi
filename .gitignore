@@ -26,7 +26,6 @@ test.js
 /Framework/ui/views/Equipment
 /Framework/ui/views/Shipments
 /Framework/ui/views/venuesCRUD
-/Framework/ui/views/venuesImport
 
 /Framework/ui/loader.boot.js
 /Framework/ui/loader.js
