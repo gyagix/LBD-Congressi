@@ -210,6 +210,14 @@ select {
 		flex-direction: column;
 	}
 
+  .modelContent form input:hover,.modelContent form select:hover,.modelContent form textarea:hover{
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  .modelContent form input[type="checkbox"]:hover{
+      box-shadow: none !important ;
+      cursor: pointer;
+  }
+
 	/* Il campo Note prende entrambe le colonne */
 	.modelContent form > div:has(textarea) {
 		grid-column: 1 / -1;

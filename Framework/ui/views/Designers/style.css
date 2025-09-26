@@ -156,12 +156,12 @@
 	}
 
 	
-	.table-list td.eqList-td-cell-discontinued{
+	.table-list td.designer-td-cell-discontinued{
 		font-style: italic;
 		color:#dc3545;
 		text-decoration-line: line-through;
 	}
-	.table-list td.eqList-td-discontinued{
+	.table-list td.designer-td-discontinued{
 		font-style: italic;
 		color:#dc3545;
 	}
@@ -212,53 +212,27 @@
 
 	.modelContent form{
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr; /* tre colonne */
-		grid-template-areas:
-			"code desc desc"
-			"qty cat dis"
-			"btn btn btn";
+		grid-template-columns: 1fr 1fr; /* due colonne */
 		gap: 1em;
 	}
 	.modelContent form > div {
 		display: flex;
 		flex-direction: column;
 	}
+    
+    .modelContent form input:hover,.modelContent form select:hover,.modelContent form textarea:hover{
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    .modelContent form input[type="checkbox"]:hover{
+        box-shadow: none !important ;
+        cursor: pointer;
+    }
 
-	/* Il campo Note prende entrambe le colonne */
-	.modelContent form > div:nth-child(1) {
-		grid-area: code;
-	}
-
-	/* Seconda riga: 3 campi */
-	.modelContent form  > div:nth-child(2) {
-		grid-area: desc;
-	}
-
-	.modelContent form  > div:nth-child(3) {
-		grid-area: qty;
-	}
-
-	.modelContent form  > div:nth-child(4) {
-		grid-area: cat;
-	}
-
-	.modelContent form  > div:nth-child(5) {
-		grid-area: dis;
-	}
-	.modelContent form  > div:nth-child(5) label {		
-		justify-self: start; /* allinea l'intero div nella cella */
-		align-self: center;   /* opzionale: in alto */
-	}
-	.modelContent form  > div:nth-child(5) input {		
-		justify-self: start; /* allinea l'intero div nella cella */
-		align-self: center;   /* opzionale: in alto */
-	}
-
-	.modelContent form > .modelContentFormButtons {
-		grid-area: btn;
-		display: flex;
-		gap: 1rem; /* spazio tra bottoni */
-    	flex-direction: row;
+	.modelContent form .modalContainerContentButtons{
+		grid-column: 1 / -1;				/* forza a occupare tutta la larghezza della grid */
+		display: flex;        
+        flex-direction: row;
+		gap: 1em;							 /* spazio tra i bottoni */		
 	}
 
 
@@ -273,10 +247,13 @@
         background: #f5f5f5;
         cursor: pointer;
     }
-    .modalContentButton:hover{
-        background-color: #cccccc;
-        border: 1px solid #f5f5f5;
-    }
+    
+	.modalContentButton:hover{		
+		background-color: #2a4970;
+		border: 1px solid;
+		border-color: #213957;
+		color:#ffffff
+	}
 
 
     /*Gestione colonne da mostrare/nascondere*/
@@ -398,6 +375,7 @@
     .loading-hide {
         opacity: 0;
         pointer-events: auto;
+        display: none;
     }
 
     .loading-box .close-btn {

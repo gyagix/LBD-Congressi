@@ -32,6 +32,7 @@
 			overlayContainer:null,
 			editContainer:null, //container di modifica
 			editTablesCols:null, //container delle colonne da mostrare/nascondere
+			editContainerAssoc:null,
 			notif:null, //div per le notifiche
 			notifyMsg:null,
 			notifTimeout:null,
@@ -77,6 +78,7 @@
 
 				this.overlayContainer = document.getElementById("overlayContainer");
 				this.editContainer = document.getElementById("editContainer"); 
+				this.editContainerAssoc = document.getElementById("editContainerAssociations");
 				this.notif = document.getElementById("divNotification");
 				this.notifyMsg = document.getElementById("notifMsg");
 				this.loading = document.getElementById("divLoading");
@@ -285,7 +287,7 @@
 
 
 			async saveProject() {
-				this.showLoading("Caricamento dati in corso...")
+				this.showLoading("Salvataggio dati in corso...")
 				try {
 					const payload = JSON.parse(JSON.stringify(this.form));
 
@@ -300,7 +302,7 @@
 
 					await this.loadProjects();
 					this.resetForm();
-					this.showNotification('Progetto salvato con successo.');
+					this.showNotification('Progetto salvato con successo.','success');
 				} catch (e) {
 					const msg = (e?.message || '').toLowerCase();
 					if (msg.includes('esiste già un elemento') || msg.includes('unicità')) {
@@ -316,12 +318,16 @@
 
 			async deleteProject(id) {
 				if (!confirm('Sei sicuro di voler eliminare questo Progetto?')) return;
+				this.showLoading("Operazione in corso")
 				try {
 					await this.projectLogic.delete(id);
 					await this.loadProjects();
 				} catch (e) {
 					logger.error('Errore cancellazione Progetto:', e);
 					this.showNotification('Errore nella cancellazione<br />' + (e?.message || ''),'error');
+				}
+				finally {					
+					this.hideLoading();
 				}
 			},
 
@@ -330,7 +336,7 @@
 				const d = new Date(dateStr);
 				if (isNaN(d)) return dateStr;
 				return d.toLocaleDateString('it-IT');
-				},
+			},
 			
 			showHideTableListFields(){
 				
@@ -351,8 +357,6 @@
 					}else{
 						thField.classList.add("table-list-column-hide")
 					}
-
-					
 				})
 			},
 			openEditTableListShowHide(){
@@ -376,11 +380,12 @@
 				this.closeOverlay();
 			},
             showNotification(message, type){
+				const typeMsg = type || 'success';
                 this.notifyMsg.innerHTML  = message;
-                this.notif.className = `notification ${type} show`;
+                this.notif.className = `notification ${typeMsg} show`;
 
                 // se è successo: autoclose dopo 3 secondi
-                switch(type){
+                switch(typeMsg){
                     case "success":
                     clearTimeout(this.notifTimeout);
                     this.notifTimeout = setTimeout(() => {
@@ -425,6 +430,7 @@
 				this.hideNotification()
             },
             showLoading(myText = "Salvataggio in corso"){
+				logger.log("showLoading",myText)
                 this.openOverlay();
                 // prende il primo <p> dentro a divLoading
                 let p = this.loading.querySelector("p");
@@ -436,10 +442,6 @@
                 this.loading.classList.add("loading-hide");
             },
 			
-			// === STATE per Associations ===
-			ui: {
-				showAssociations: false
-			},
 			assoc: {
 				project: null,                 // progetto selezionato (oggetto riga)
 				venueId: null,                 // per filtrare
@@ -469,63 +471,60 @@
 			// === OPEN/CLOSE ===
 			// Apri Associations
 			openAssociations(project) {
-			try {
-				console.debug('[DEBUG] Avvio caricamento Associazioni a Progetto');
+				this.openOverlay();
+				this.editContainerAssoc.classList.remove('modelContentAssociationsHidden');
+				
+				try {
+					logger.debug('[DEBUG] Avvio caricamento Associazioni a Progetto');
 
-				// 1) Memorizzo il progetto selezionato
-				this.assoc.project = project;
+					// 1) Memorizzo il progetto selezionato
+					this.assoc.project = project;
+					
+					
+					// 2) Mostro SUBITO il modal via Alpine
+					//this.ui.showAssociations = true;
 
-				// 2) Mostro SUBITO il modal via Alpine
-				this.ui.showAssociations = true;
+					// 3) Tolgo le classi "hidden" in modo difensivo, quando il DOM è pronto
+					/*
+					this.$nextTick(() => {
+						const overlay = document.getElementById('overlayContainer');
+						if (overlay && overlay.classList.contains('overlayhidden')) {
+							overlay.classList.remove('overlayhidden');
+						}
 
-				// 3) Tolgo le classi "hidden" in modo difensivo, quando il DOM è pronto
-				this.$nextTick(() => {
-					const overlay = document.getElementById('overlayContainer');
-					if (overlay && overlay.classList.contains('overlayhidden')) {
-						overlay.classList.remove('overlayhidden');
-					}
+						const modal = document.getElementById('editContainerAssociations');
+						if (modal && modal.classList.contains('modelContentAssociationsHidden')) {
+							modal.classList.remove('modelContentAssociationsHidden');
+						}
+					});
+					*/
 
-					const modal = document.getElementById('editContainerAssociations');
-					if (modal && modal.classList.contains('modelContentAssociationsHidden')) {
-						modal.classList.remove('modelContentAssociationsHidden');
-					}
-				});
+					// 4) Carico i dati (anche se vuoti, il modal rimane aperto)
+					Promise.all([
+						this.showLoading("Caricamento dati in corso..."),
+						this.reloadEvents(),     // eventi disponibili filtrati per venue
+						this.reloadShipping(),   // spedizioni disponibili filtrate per venue
+						this.loadEventLinks(),	 // eventi già associati
+						this.loadShipmentLinks() // spedizioni già associate
+					])
+					.then(() => this.hideLoading())
+					.catch(err => {
+						this.hideLoading();
+						logger.error('Errore nel caricamento associazioni', err);
+						this.showNotification('Errore nel caricamento associazioni', 'error');
+					});
 
-				// 4) Carico i dati (anche se vuoti, il modal rimane aperto)
-				Promise.all([
-					this.reloadEvents(),     // eventi disponibili filtrati per venue
-					this.reloadShipping(),   // spedizioni disponibili filtrate per venue
-					this.loadEventLinks(),	 // eventi già associati
-					this.loadShipmentLinks() // spedizioni già associate
-				]).catch(err => {
-					logger.error('Errore nel caricamento associazioni', err);
-					this.showNotification('Errore nel caricamento associazioni', 'error');
-				});
-
-			} catch (err) {
-				logger.error('openAssociations() error', err);
-				this.showNotification('Errore apertura pannello associazioni', 'error');
-			}
+				} catch (err) {
+					logger.error('openAssociations() error', err);
+					this.showNotification('Errore apertura pannello associazioni', 'error');
+				}
 			},
 
 			// Chiudi Associations
 			closeAssociations() {
-			try {
-				this.ui.showAssociations = false;
-
-				const modal = document.getElementById('editContainerAssociations');
-				if (modal && !modal.classList.contains('modelContentAssociationsHidden')) {
-					modal.classList.add('modelContentAssociationsHidden');
-				}
-
-				const overlay = document.getElementById('overlayContainer');
-				if (overlay && !overlay.classList.contains('overlayhidden')) {
-					overlay.classList.add('overlayhidden');
-				}
-
-			} catch (err) {
-				logger.error('closeAssociations() error', err);
-			}
+				this.hideLoading();
+				this.editContainerAssoc.classList.add('modelContentAssociationsHidden');
+				this.closeOverlay();
 			},
 
 			// === LOAD DISPONIBILI (filtrati per venue) ===
@@ -556,7 +555,7 @@
 			},
 
 			async reloadShipping() {
-				logger.log("reloadShipping",this.assoc.project.VenueId,this.assoc.shipments.all);
+				//logger.log("reloadShipping",this.assoc.project.VenueId,this.assoc.shipments.all);
 				if (!this.assoc.project.VenueId) { 
 					this.assoc.shipments.all = []; 
 					this.assoc.shipments.filtered = []; 
@@ -576,7 +575,7 @@
 			},
 			filterShipping() {
 				const q = (this.assoc.shipments.search || '').toLowerCase();
-				logger.log("filterShipping",q);
+				//logger.log("filterShipping",q);
 				this.assoc.shipments.filtered = this.assoc.shipments.all.filter(sh =>
 					`${sh.ShipmentName ||''}`.toLowerCase().includes(q)
 				);
@@ -586,7 +585,7 @@
 			// === LOAD LINK ESISTENTI ===
 			async loadEventLinks() {
 				const pid = this.assoc.project?.Id;
-				logger.log("loadEventLinks",this.assoc.project,pid);
+				//logger.log("loadEventLinks",this.assoc.project,pid);
 				if (!pid) return;
 				const url = `${webUrl}/_api/web/lists/getbytitle('EventsXProgetto')/items
 							?$select=Id,ProjectId/Id,EventId/Id,EventId/EventName,PeriodBegins,PeriodEnds
@@ -613,7 +612,7 @@
 			
 			async loadShipmentLinks() {
 				const pid = this.assoc.project?.Id;
-				logger.log("loadShipmentLinks",this.assoc.project,pid);
+				//logger.log("loadShipmentLinks",this.assoc.project,pid);
 				if (!pid) return;
 				const url = `${webUrl}/_api/web/lists/getbytitle('ShipmentsXProgetto')/items
 							?$select=Id,ProjectId/Id,ShippingId/Id,ShippingId/ShipmentName,PeriodBegins,PeriodEnds
@@ -680,36 +679,36 @@
 			},
 
 			addShipment(sh) {
-			const link = {
-				_key: `tmp-sh-${sh.Id}-${Date.now()}`,
-				ProjectId: this.assoc.project.Id,
-				ShippingId: sh.Id,
-				_display: sh.ShipmentName || '',
-				PeriodBegins: this.formatDate(sh.PickupDate),
-				PeriodEnds: sh.DeliveryDate ? this.formatDate(sh.DeliveryDate) : ''
-			};
-			this.assoc.shipments.linked.push(link);
+				const link = {
+					_key: `tmp-sh-${sh.Id}-${Date.now()}`,
+					ProjectId: this.assoc.project.Id,
+					ShippingId: sh.Id,
+					_display: sh.ShipmentName || '',
+					PeriodBegins: this.formatDate(sh.PickupDate),
+					PeriodEnds: sh.DeliveryDate ? this.formatDate(sh.DeliveryDate) : ''
+				};
+				this.assoc.shipments.linked.push(link);
 
-			this.assoc.shipments.available = this.assoc.shipments.available.filter(x => x.Id !== sh.Id);
-			this.filterShipping();
+				this.assoc.shipments.available = this.assoc.shipments.available.filter(x => x.Id !== sh.Id);
+				this.filterShipping();
 
-			this.assoc.shipments.pendingAdds = this.assoc.shipments.pendingAdds || [];
-			this.assoc.shipments.pendingAdds.push({ ShippingId: sh.Id, PeriodBegins: link.PeriodBegins, PeriodEnds: link.PeriodEnds });
+				this.assoc.shipments.pendingAdds = this.assoc.shipments.pendingAdds || [];
+				this.assoc.shipments.pendingAdds.push({ ShippingId: sh.Id, PeriodBegins: link.PeriodBegins, PeriodEnds: link.PeriodEnds });
 			},
 
 			removeShipment(link) {
-			this.assoc.shipments.linked = this.assoc.shipments.linked.filter(l => l._key !== link._key);
+				this.assoc.shipments.linked = this.assoc.shipments.linked.filter(l => l._key !== link._key);
 
-			const sh = this.assoc.shipments.all.find(s => Number(s.Id) === Number(link.ShippingId));
-			if (sh) {
-				this.assoc.shipments.available.push(sh);
-				this.filterShipping();
-			}
+				const sh = this.assoc.shipments.all.find(s => Number(s.Id) === Number(link.ShippingId));
+				if (sh) {
+					this.assoc.shipments.available.push(sh);
+					this.filterShipping();
+				}
 
-			this.assoc.shipments.pendingDeletes = this.assoc.shipments.pendingDeletes || [];
-			if (link.Id) {
-				this.assoc.shipments.pendingDeletes.push(link.Id);
-			}
+				this.assoc.shipments.pendingDeletes = this.assoc.shipments.pendingDeletes || [];
+				if (link.Id) {
+					this.assoc.shipments.pendingDeletes.push(link.Id);
+				}
 			},
 
 			resetAssociations() {
@@ -719,6 +718,8 @@
 
 			// === SAVE: calcola differenze e fa create/delete/update nelle liste ponte ===
 			async saveAssociations() {
+				
+				this.showLoading("Salvataggio dati in corso")
 				const pid = this.assoc.project?.Id;
 				if (!pid) return;
 
@@ -733,6 +734,8 @@
 					'ShippingId'
 				);
 
+				logger.log('saveAssociations | Eeents',this.assoc.eventsOriginalLinks,this.assoc.events.linked);
+				logger.log('saveAssociations | DIFF',evDiff,shDiff);
 				// EventsXProgetto
 				for (const x of evDiff.toCreate) {
 					await this.spPOSTCreate('EventsXProgetto', {
@@ -782,6 +785,9 @@
 				this.recomputeAvailableEvents();
 				this.recomputeAvailableShipments();
 				
+				
+				this.showNotification('Dati salvati con successo.','success');
+				this.hideLoading();
 				this.closeAssociations();
 			},
 

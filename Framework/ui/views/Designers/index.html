@@ -54,11 +54,11 @@
 								</svg>
 							</button>
 						</td>
-						<td data-name="Id" x-text="item.Id" :class="item.Discontinued ? 'eqList-td-cell-discontinued' : ''"></td>
-						<td data-name="Cognome" x-text="item.Cognome" :class="item.Discontinued ? 'eqList-td-cell-discontinued' : ''"></td>
-						<td data-name="Nome" x-text="item.Nome" :class="item.Discontinued ? 'eqList-td-cell-discontinued' : ''"></td>
-						<td data-name="Email" x-text="item.Email" :class="item.Discontinued ? 'eqList-td-cell-discontinued' : ''"></td>
-						<td data-name="Discontinued" x-text="item.Discontinued ? 'Si' : ''" :class="item.Discontinued ? 'eqList-td-discontinued' : ''"></td>
+						<td data-name="Id" x-text="item.Id" :class="item.Discontinued ? 'designer-td-cell-discontinued' : ''"></td>
+						<td data-name="Cognome" x-text="item.Cognome" :class="item.Discontinued ? 'designer-td-cell-discontinued' : ''"></td>
+						<td data-name="Nome" x-text="item.Nome" :class="item.Discontinued ? 'designer-td-cell-discontinued' : ''"></td>
+						<td data-name="Email" x-text="item.Email" :class="item.Discontinued ? 'designer-td-cell-discontinued' : ''"></td>
+						<td data-name="Discontinued" x-text="item.Discontinued ? 'Si' : ''" :class="item.Discontinued ? 'designer-td-discontinued' : ''"></td>
 						<td>
 							<button @click="deleteDesigner(item.Id)">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -101,12 +101,14 @@
 					<label>Discontinued</label>
 					<input type="checkbox" x-model="form.Discontinued" />
 				</div>
-				<div class="modelContentFormButtons">
+				
+				
+				<div class="modalContainerContentButtons btn-group">
                     <button class="modalContentButton" type="submit">
                         <span x-text="form.Id ? 'Aggiorna Designer' : 'Aggiungi Designer'"></span>
                         <svg xmlns="http://www.w3.org/2000/svg" 
                             width="24" height="24" viewBox="0 0 24 24" 
-                            fill="none" stroke="#000" stroke-width="2" 
+                            fill="none" stroke="currentColor" stroke-width="2" 
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                             <polyline points="17 21 17 13 7 13 7 21"/>
@@ -122,7 +124,7 @@
                         Chiudi senza salvare
                         <svg xmlns="http://www.w3.org/2000/svg" 
                             width="24" height="24" viewBox="0 0 24 24" 
-                            fill="none" stroke="#000" stroke-width="2" 
+                            fill="none" stroke="currentColor" stroke-width="2" 
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                             <polyline points="16 17 21 12 16 7"/>

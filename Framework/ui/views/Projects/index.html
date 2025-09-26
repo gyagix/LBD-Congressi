@@ -149,12 +149,12 @@
 
 
 
-				<div class="modalContainerContentButtons">
+				<div class="modalContainerContentButtons btn-group">
 					<button class="modalContentButton" type="submit">
 						<span x-text="form.Id ? 'Aggiorna Progetto' : 'Aggiungi Progetto'"></span>
 						<svg xmlns="http://www.w3.org/2000/svg" 
 							width="24" height="24" viewBox="0 0 24 24" 
-							fill="none" stroke="#000" stroke-width="2" 
+							fill="none" stroke="currentColor" stroke-width="2" 
 							stroke-linecap="round" stroke-linejoin="round">
 							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
 							<polyline points="17 21 17 13 7 13 7 21"/>
@@ -169,7 +169,7 @@
 							Chiudi senza salvare
 							<svg xmlns="http://www.w3.org/2000/svg" 
 								width="24" height="24" viewBox="0 0 24 24" 
-								fill="none" stroke="#000" stroke-width="2" 
+								fill="none" stroke="currentColor" stroke-width="2" 
 								stroke-linecap="round" stroke-linejoin="round">
 								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
 								<polyline points="16 17 21 12 16 7"/>
@@ -215,7 +215,7 @@
         </div>
 
 		<!-- MODAL ASSOCIAZIONI -->
-		<div class="modelContentAssociations modelContentAssociationsHidden" x-show="ui.showAssociations" id="editContainerAssociations" x-cloak>
+		<div class="modelContentAssociations modelContentAssociationsHidden" id="editContainerAssociations">
 			<div class="model">
 				<div class="modelHeader">
 					<h3 x-text="assoc.project ? `Associa Eventi e Spedizioni a Progetto ${assoc.project.ProjectCode || ''} - ${assoc.project.ProjectDescription || ''}` : ''"> </h3>
@@ -249,7 +249,7 @@
 											<tr>
 											<td x-text="i+1"></td>
 											<td x-text="ev.Id"></td>
-											<td x-text="ev.EventName || ''"></td>
+											<td x-text="ev.EventName || ''"></td>p
 											<td x-text="formatDate(ev.DateStart) + (ev.DateEnd ? (' → ' + formatDate(ev.DateEnd)) : '')"></td>
 											<td>
 												<button class="section-button" @click="addEvent(ev)">
@@ -289,8 +289,8 @@
 										<tr>
 											<td x-text="link.EventId"></td>
 											<td x-text="link._display || ''"></td>
-											<td x-text="link.PeriodBegins || ''"></td>
-											<td x-text="link.PeriodEnds || ''"></td>
+											<td x-text="formatDate(link.PeriodBegins) || ''"></td>
+											<td x-text="formatDate(link.PeriodEnds) || ''"></td>
 											<td>
 												<button class="section-button" @click="removeEvent(link)">
 													<svg role="img" aria-label="Rimuovi elemento" xmlns="http://www.w3.org/2000/svg" 
@@ -381,8 +381,8 @@
 									<tr>
 										<td x-text="link.ShippingId"></td>
 										<td x-text="link._display || ''"></td>
-										<td x-text="link.PeriodBegins || ''"></td>
-										<td x-text="link.PeriodEnds || ''"></td>
+										<td x-text="formatDate(link.PeriodBegins) || ''"></td>
+										<td x-text="formatDate(link.PeriodEnds) || ''"></td>
 										<td>
 											<button class="section-button" @click="removeShipment(link)">
 												<svg role="img" aria-label="Rimuovi elemento" xmlns="http://www.w3.org/2000/svg" 
@@ -403,15 +403,46 @@
 						</div>
 					</div>
 				</div>
-				<div class="container-buttons">
-					<button class="btn-primary" @click="saveAssociations()">Salva le modifiche</button>
-					<button class="" @click="resetAssociations()">Annulla modifiche</button>
-					<button class="" @click="closeAssociations()">Chiudi senza salvare</button>
+				<div class="container-buttons btn-group">
+					<button class="btn btn-primary" @click="saveAssociations()">
+						Salva le modifiche
+						<svg xmlns="http://www.w3.org/2000/svg" 
+							width="24" height="24" viewBox="0 0 24 24" 
+							fill="none" stroke="currentColor" stroke-width="2" 
+							stroke-linecap="round" stroke-linejoin="round">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+							<polyline points="17 21 17 13 7 13 7 21"/>
+							<polyline points="7 3 7 8 15 8"/>
+						</svg>
+					</button>
+					<button class="btn " @click="resetAssociations()">
+						Annulla modifiche
+						<svg xmlns="http://www.w3.org/2000/svg"
+							width="24" height="24" viewBox="0 0 24 24"
+							fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round" role="img" aria-hidden="false">
+							
+							<!-- X disegnata all’interno del documento -->
+							<line x1="6" y1="9" x2="12" y2="15"/>
+							<line x1="12" y1="9" x2="6" y2="15"/>
+						</svg>
+					</button>
+					<button class="btn " @click="closeAssociations()">
+						Chiudi senza salvare
+						<svg xmlns="http://www.w3.org/2000/svg" 
+							width="24" height="24" viewBox="0 0 24 24" 
+							fill="none" stroke="currentColor" stroke-width="2" 
+							stroke-linecap="round" stroke-linejoin="round">
+							<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+							<polyline points="16 17 21 12 16 7"/>
+							<line x1="21" y1="12" x2="9" y2="12"/>
+						</svg>
+					</button>
 				</div>
-		</div>
+			</div>
 
-    </div>
-
+    	</div>
+	</div>
     <div id="divNotification" class="notification">
         <span id="notifMsg"></span>
         <span class="close-btn" @click="hideNotification">&times;</span>

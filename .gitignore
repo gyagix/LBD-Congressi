@@ -23,10 +23,10 @@ test.js
 /Framework/ui/BaseViewModel.js
 /Framework/ui/views/DESEQRequest-BE
 /Framework/ui/views/EQListStockCRUD
-/Framework/ui/views/Equipment
-/Framework/ui/views/Shipments
 /Framework/ui/views/venuesCRUD
 
 /Framework/ui/loader.boot.js
 /Framework/ui/loader.js
 /Framework/ui/manu.aspx
+/Deploy
+/Publish

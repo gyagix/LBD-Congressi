@@ -4,51 +4,51 @@ form {
     gap: 10px;
     margin-bottom: 15px;
 }
-        
+
 form label {
-    display: block;
-    font-size: 12px;
-    margin-bottom: 2px;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
 }
 
 form input,
 form textarea,
 form button,
 form select {
-    padding: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+  padding: 5px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 form textarea {
-    min-height: 40px;
+  min-height: 40px;
 }
 
 form button {
-    grid-column: span 2;
-    cursor: pointer;
+  grid-column: span 2;
+  cursor: pointer;
 }
 
 table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 14px;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 6px 10px;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
 }
 
 th {
-    background-color: #f4f4f4;
-    cursor: pointer;
+  background-color: #f4f4f4;
+  cursor: pointer;
 }
 
 tr:nth-child(even) {
-    background-color: #fafafa;
+  background-color: #fafafa;
 }
 
 input[type='text'],
@@ -57,14 +57,18 @@ input[type='date'],
 input[type='time'],
 textarea,
 select {
-    border: 1px solid #ccc;
-    border-radius: 3px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }
+
+
 /*Filtri elenco*/
 
 	.filter-list{
 		display: flex;
 		gap: 0.5em;
+
+    
 	}
 
 	.button-icon{
@@ -79,56 +83,71 @@ select {
 		cursor: pointer;
 	}
 
+  .list-scroll{
+    height: 60svh;                 /* altezza dinamica */
+    overflow-y: auto;
+    overflow-x: auto;              /* abilita scroll orizzontale se necessario */
+    -webkit-overflow-scrolling: touch;    
+		opacity: 1;
+		display: block;
+		transition: opacity 0.7s ease;
+  }
 /*Tabella elenco*/
-	.list-scroll{
-        height: 55svh;                 /* altezza dinamica */
-        overflow-y: auto;
-        overflow-x: auto;              /* abilita scroll orizzontale se necessario */
-        -webkit-overflow-scrolling: touch;    
-            opacity: 1;
-            display: block;
-            transition: opacity 0.7s ease;
-    }
-    /*Tabella elenco*/
-    .table-list{
-        width: 100%;
-        table-layout: fixed;           /* colonne fisse */
-    }
-    .table-list th,
-    .table-list td {
-        padding: 6px 10px;
-        border: 1px solid #ddd;      
-        text-align: left;
-    }
-    
-    /* Header della tabella fisso dentro .list-scroll */
-    .table-list thead th{
-        position: sticky;
-        top: 0;
-        background: #f4f4f4;
-        z-index: 1;
-        border-bottom: 2px solid #ccc;
-    }
-    
-	.table-list tbody tr:hover{
-        background-color: #cccccc;
+	.table-list{
+    width: 100%;
+    table-layout: fixed;           /* colonne fisse */
 	}
 
-	.table-list th:first-child,
-    .table-list td:first-child,
-    .table-list th:last-child,
-    .table-list td:last-child {
-        width: 60px;
-    }
-    .table-list th:nth-child(2),
-    .table-list td:nth-child(2) {
-        width: 50px;
-        }
+  .table-list th,
+  .table-list td {
+      padding: 6px 10px;
+      border: 1px solid #ddd;      
+      text-align: left;
+  }
+  
+  /* Header della tabella fisso dentro .list-scroll */
+  .table-list thead th{
+    position: sticky;
+    top: 0;
+    background: #f4f4f4;
+    z-index: 1;
+    border-bottom: 2px solid #ccc;
+  }
+  
+  /* Corpo scrollabile * /
+  .table-list tbody {
+      max-height: 400px;   /* uguale a .list-scroll * /
+      overflow-y: auto;
+      width: 100%;
+  }
+      */
+  
+  /* Righe del corpo 
+  .table-list tbody tr {
+      display: table-row;
+      table-layout: fixed;
+      width: 100%;
+  }*/
 
-	.table-list-hide{
-		opacity:0;
-        transition: opacity 0.7s ease;
-		display: none	;
+	.table-list tbody tr:hover{
+      background-color: #cccccc;
+	}
+	.table-list th:first-child,
+  .table-list td:first-child,
+  .table-list th:last-child,
+  .table-list td:last-child {
+      width: 60px;
+	}
+
+  .table-list th:nth-child(2),
+  .table-list td:nth-child(2) {
+      width: 50px;
+	}
+
+	.list-scroll-hide{
+		  opacity:0;
+      transition: opacity 0.7s ease;
+		  display: none	;
 	}
 
 	.table-list-column-hide{
@@ -161,8 +180,9 @@ select {
         background: #fff;
         padding: 20px;
         border-radius: 10px;
-        width: 80%;
-        max-width: 90%;
+        width: 50%;
+        max-width: 60%;
+        max-height: 70%;
         box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         margin:auto;
         max-height: 80vh;          /* limite in altezza */
@@ -177,46 +197,54 @@ select {
         opacity: 0;
         transform: scale(0.95);
         pointer-events: none;
-        display:none;
+        display: none;
     }
 
 	.modelContent form{
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr; /* tre colonne */
+		grid-template-columns: 1fr 1fr; /* due colonne */
 		gap: 1em;
 	}
 	.modelContent form > div {
 		display: flex;
 		flex-direction: column;
 	}
-    .modelContent form input:hover,.modelContent form select:hover,.modelContent form textarea:hover{
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-    .modelContent form input[type="checkbox"]:hover{
-        box-shadow: none !important ;
-        cursor: pointer;
-    }
+
+  /* Il campo Note prende entrambe le colonne */
+	.modelContent form > div:nth-child(4) {
+		grid-column: 1 / -1;
+	}
 
 	/* Il campo Note prende entrambe le colonne */
 	.modelContent form > div:has(textarea) {
 		grid-column: 1 / -1;
 	}
+	.modelContent form .modalContainerContentButtons{
+		grid-column: 1 / -1;          /* forza a occupare tutta la larghezza della grid */
+		display: flex;		
+    	flex-direction: row;
+		gap: 1em;                     /* spazio tra i bottoni */
+		margin-top: 1em;
+
+	}
 
     .modalContentButton{
-        display: inline-flex;      /* layout orizzontale con flex */
-        align-items: center;       /* centra verticalmente testo e SVG */
-        justify-content: center;   /* centra orizzontalmente dentro il bottone */
-        gap: 6px;                  /* spazio tra testo e icona */
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #f5f5f5;
-        cursor: pointer;
-    }
-    .modalContentButton:hover{
-        background-color: #cccccc;
-        border: 1px solid #f5f5f5;
-    }
+      display: inline-flex;		/* layout orizzontale con flex */
+      align-items: center;		 /* centra verticalmente testo e SVG */
+      justify-content: center;	 /* centra orizzontalmente dentro il bottone */
+      gap: 6px;						/* spazio tra testo e icona */
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f5f5f5;
+      cursor: pointer;
+	}
+	.modalContentButton:hover{		
+		background-color: #2a4970;
+		border: 1px solid;
+		border-color: #213957;
+		color:#ffffff
+	}
 
 
     /*Gestione colonne da mostrare/nascondere*/
@@ -300,10 +328,9 @@ select {
     .notification.success {
         background-color: #28a745; /* verde */
     }
-    
     .notification.warning {
         background-color: #edc100; /* arancione */
-        color:#000000;
+        color:#000000 !important;
     }
 
     .notification.error {
@@ -333,6 +360,8 @@ select {
         */
         opacity:1;        
         transition: opacity 0.4s ease;
+        z-index: 2000;
+        pointer-events: auto
     }
 
     .loading-hide {
